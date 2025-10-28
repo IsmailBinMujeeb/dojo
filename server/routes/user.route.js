@@ -29,7 +29,7 @@ router.put(
   '/',
   authMiddleware,
   upload.fields([{ name: 'avatar' }, { name: 'coverPhoto' }]),
-  asyncHandler(updateUser),
+  asyncHandler(updateUser)
 );
 router.delete('/', authMiddleware, asyncHandler(deleteUser));
 

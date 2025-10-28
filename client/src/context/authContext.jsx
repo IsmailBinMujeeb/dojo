@@ -1,5 +1,6 @@
 import { createContext, useState } from "react";
 
+// eslint-disable-next-line
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {

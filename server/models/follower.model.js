@@ -14,7 +14,7 @@ const followerSchema = new mongoose.Schema(
       required: true,
     },
   },
-  { timestamps: true },
+  { timestamps: true }
 );
 
 followerSchema.plugin(paginatePlugin);

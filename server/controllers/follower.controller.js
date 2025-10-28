@@ -49,7 +49,7 @@ export const getFollowers = async (req, res) => {
       limit,
       sort: { createdAt: -1 },
       populate: [{ path: 'followedBy', select: 'username name avatar _id bio' }],
-    },
+    }
   );
 
   return res.status(200).json(new ApiResponse(200, 'Followers retrieved', followers));
@@ -71,7 +71,7 @@ export const getFollowing = async (req, res) => {
       limit,
       sort: { createdAt: -1 },
       populate: [{ path: 'followedTo', select: 'username name avatar _id bio' }],
-    },
+    }
   );
 
   return res.status(200).json(new ApiResponse(200, 'Following retrieved', following));

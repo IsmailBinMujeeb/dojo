@@ -33,7 +33,12 @@ const Explore = () => {
     <Protected>
       <PanelWrapper>
         <div>
-          {users &&
+          {isLoading ? (
+            <div className="w-full h-full flex justify-center items-center">
+              <Spinner className="size-8 text-blue-500" />
+            </div>
+          ) : (
+            users &&
             users.map((user) => (
               <div
                 className="flex flex-nowrap gap-2 w-full mb-4 border-t border-t-zinc-500 p-4"
@@ -55,7 +60,8 @@ const Explore = () => {
                   View
                 </Button>
               </div>
-            ))}
+            ))
+          )}
         </div>
       </PanelWrapper>
     </Protected>

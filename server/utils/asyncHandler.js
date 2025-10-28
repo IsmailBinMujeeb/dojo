@@ -13,8 +13,8 @@ export default (fn) => async (req, res, next) => {
           error.statusCode || 500,
           error.message || 'Internal Server Error',
           null,
-          error.errors || [],
-        ),
+          error.errors || []
+        )
       );
   }
 };

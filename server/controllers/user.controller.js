@@ -153,7 +153,7 @@ export const logoutUser = async (req, res) => {
 
   await userModel.findOneAndUpdate(
     { refreshToken: incomingRefreshToken },
-    { $unset: { refreshToken: 1 } },
+    { $unset: { refreshToken: 1 } }
   );
 
   res.clearCookie('accessToken');
@@ -182,7 +182,7 @@ export const getUserByUsername = async (req, res) => {
   }
 
   const isUserFollowingProfile = user.followers?.some(
-    (follower) => userId === follower.user._id.toString(),
+    (follower) => userId === follower.user._id.toString()
   );
 
   const isProfileBelongsToAthenticatedUser = userId === user._id.toString();
@@ -192,7 +192,7 @@ export const getUserByUsername = async (req, res) => {
       ...user,
       isProfileBelongsToAthenticatedUser,
       isUserFollowingProfile,
-    }),
+    })
   );
 };
 
@@ -296,7 +296,7 @@ export const refreshAccessToken = async (req, res) => {
   res
     .status(200)
     .json(
-      new ApiResponse(200, 'Access token refreshed successfully', { accessToken, refreshToken }),
+      new ApiResponse(200, 'Access token refreshed successfully', { accessToken, refreshToken })
     );
 };
 
@@ -313,7 +313,7 @@ export const updateUser = async (req, res) => {
   const user = await userModel.findByIdAndUpdate(
     _id,
     { bio, name, location, website },
-    { new: true },
+    { new: true }
   );
 
   if (!user) {

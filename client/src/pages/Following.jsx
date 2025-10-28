@@ -34,7 +34,12 @@ const Following = () => {
     <Protected>
       <PanelWrapper>
         <div>
-          {following &&
+          {isLoading ? (
+            <div className="w-full h-full flex justify-center items-center">
+              <Spinner className="size-8 text-blue-500" />
+            </div>
+          ) : (
+            following &&
             following.map(
               (user) =>
                 user.followedTo && (
@@ -67,7 +72,8 @@ const Following = () => {
                     </Button>
                   </div>
                 ),
-            )}
+            )
+          )}
         </div>
       </PanelWrapper>
     </Protected>
