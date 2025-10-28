@@ -5,6 +5,7 @@ config();
 export default {
   PORT: String(process.env.PORT || 3000),
   DB_URI: String(process.env.DB_URI || 'mongodb://localhost:27017/dojo'),
+  NODE_ENV: String(process.env.NODE_ENV || 'development'),
   CLOUD_NAME: String(process.env.CLOUD_NAME || 'cloud_name'),
   CLOUD_SECRET: String(process.env.CLOUD_SECRET || 'cloud_secret'),
   CLOUD_API_KEY: String(process.env.CLOUD_API_KEY || 'cloud_api_key'),
