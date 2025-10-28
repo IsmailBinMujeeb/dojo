@@ -11,7 +11,7 @@ import Bookmarks from "@/pages/Bookmarks";
 import Explore from "@/pages/Explore";
 import Notifications from "@/pages/Notifications";
 import Messages from "@/pages/Messages";
-import DojoAI from "@/pages/DojoAI";
+import DojoAI from "@/pages/Dojoai";
 import Settings from "@/pages/Settings";
 import NotFound from "@/pages/NotFound";
 

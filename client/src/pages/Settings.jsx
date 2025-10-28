@@ -18,7 +18,7 @@ const Settings = () => {
   const handleDeleteAccount = async () => {
     try {
       setIsLoading(true);
-      await fetch("http://localhost:3000/api/user", {
+      await fetch(`${import.meta.env.VITE_API_ENDPOINT}/user`, {
         method: "DELETE",
         credentials: "include",
       });

@@ -4,6 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import PanelWrapper from "@/components/panel-wrapper";
 import { Protected } from "@/components/Protected";
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 
 const Followers = () => {
   const { _id } = useParams();
@@ -15,12 +16,12 @@ const Followers = () => {
     (async () => {
       try {
         const response = await fetch(
-          `http://localhost:3000/api/followers/${_id}`,
+          `${import.meta.env.VITE_API_ENDPOINT}/followers/${_id}`,
           { credentials: "include" },
         );
         const json = await response.json();
         const data = json.data;
-        console.log(data);
+
         setFollowers(data.docs);
       } catch (error) {
         console.log(error);

@@ -1,4 +1,4 @@
-import { Alert, AlertTitle, AlertDescription } from "./ui/alert";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { CircleAlert } from "lucide-react";
 
 export const Error = ({ children }) => {

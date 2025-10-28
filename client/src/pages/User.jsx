@@ -27,7 +27,7 @@ const Profile = () => {
     (async () => {
       try {
         const data = await fetch(
-          `http://localhost:3000/api/user/profile/${username}`,
+          `${import.meta.env.VITE_API_ENDPOINT}/user/profile/${username}`,
           {
             credentials: "include",
           },
@@ -51,7 +51,7 @@ const Profile = () => {
     (async () => {
       try {
         const response = await fetch(
-          `http://localhost:3000/api/user/posts/${profile._id}`,
+          `${import.meta.env.VITE_API_ENDPOINT}/user/posts/${profile._id}`,
           {
             credentials: "include",
           },
@@ -70,10 +70,13 @@ const Profile = () => {
   async function handleFollow() {
     try {
       setIsFollowingLoading(true);
-      await fetch(`http://localhost:3000/api/follower/${profile?._id}`, {
-        credentials: "include",
-        method: "POST",
-      });
+      await fetch(
+        `${import.meta.env.VITE_API_ENDPOINT}/follower/${profile?._id}`,
+        {
+          credentials: "include",
+          method: "POST",
+        },
+      );
 
       setIsUserFollowingProfile((prev) => !prev);
     } catch (error) {

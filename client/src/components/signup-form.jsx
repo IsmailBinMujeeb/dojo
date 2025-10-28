@@ -1,13 +1,7 @@
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Field,
   FieldDescription,
@@ -29,19 +23,22 @@ export function SignupForm({ className, ...props }) {
   const submitForm = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch("http://localhost:3000/api/user/register", {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        `${import.meta.env.VITE_API_ENDPOINT}/user/register`,
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username,
+            name: username,
+            email,
+            password,
+          }),
         },
-        body: JSON.stringify({
-          username,
-          name: username,
-          email,
-          password,
-        }),
-      });
+      );
 
       if (!response.ok) {
         const responseJson = await response.json();

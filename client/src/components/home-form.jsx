@@ -1,12 +1,6 @@
 import { cn } from "@/lib/utils";
-import {
-  Field,
-  FieldDescription,
-  FieldGroup,
-  FieldSeparator,
-} from "@/components/ui/field";
+import { Field, FieldDescription, FieldGroup } from "@/components/ui/field";
 import { Button } from "@/components/ui/button";
-import { GoogleIcon, GithubIcon } from "@/components/icons";
 import { useNavigate } from "react-router-dom";
 
 export function HomeForm({ className, ...props }) {

@@ -1,7 +1,7 @@
 import { useEffect, useState, useContext } from "react";
 import { AuthContext } from "@/context/authContext";
 import { useNavigate } from "react-router-dom";
-import { Spinner } from "./ui/spinner";
+import { Spinner } from "@/components/ui/spinner";
 
 export const Protected = ({ children }) => {
   const { setUser } = useContext(AuthContext);
@@ -12,11 +12,14 @@ export const Protected = ({ children }) => {
     setIsLoading(true);
     (async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/user/me", {
-          credentials: "include",
-        });
+        const response = await fetch(
+          `${import.meta.env.VITE_API_ENDPOINT}/user/me`,
+          {
+            credentials: "include",
+          },
+        );
         const data = await response.json();
-        console.log(data);
+
         if (!data.success) {
           navigate("/login");
         } else {

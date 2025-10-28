@@ -22,12 +22,6 @@ app.use(cors({ origin: env.CORS_ORIGIN, credentials: true }));
 app.use(cookieParser());
 app.use(morgan('dev'));
 
-app.use((req, res, next) => {
-  setTimeout(() => {
-    next();
-  }, 3000);
-});
-
 app.use('/api/user', userRouter);
 app.use('/api/post', postRouter);
 app.use('/api/like', likeRouter);
@@ -36,5 +30,13 @@ app.use('/api/comment-like', commentLikeRouter);
 app.use('/api/bookmark', bookmarkRouter);
 app.use('/api/explore', exploreRouter);
 app.use('/api', followerRouter);
+
+app.get('/api/health', (req, res) => {
+  res.send('Server is healthy');
+});
+
+setInterval(() => {
+  fetch(`/api/health`).catch((error) => console.error(error));
+}, 3_00_000);
 
 export default app;

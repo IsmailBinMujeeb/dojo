@@ -1,11 +1,11 @@
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { Button } from "./ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import { MessageCircle, Heart, Repeat2, Bookmark, Eye } from "lucide-react";
 
 const Post = ({ post }) => {
   async function handleLike() {
     try {
-      await fetch(`http://localhost:3000/api/like/${post?._id}`, {
+      await fetch(`${import.meta.env.VITE_API_ENDPOINT}/like/${post?._id}`, {
         credentials: "include",
         method: "POST",
       });
@@ -16,10 +16,13 @@ const Post = ({ post }) => {
 
   async function handleBookmark() {
     try {
-      await fetch(`http://localhost:3000/api/bookmark/${post?._id}`, {
-        credentials: "include",
-        method: "POST",
-      });
+      await fetch(
+        `${import.meta.env.VITE_API_ENDPOINT}/bookmark/${post?._id}`,
+        {
+          credentials: "include",
+          method: "POST",
+        },
+      );
     } catch (error) {
       console.log(error);
     }

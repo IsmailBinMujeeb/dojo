@@ -29,17 +29,20 @@ export function LoginForm({ className, ...props }) {
   const submitForm = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch("http://localhost:3000/api/user/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        `${import.meta.env.VITE_API_ENDPOINT}/user/login`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username,
+            password,
+          }),
+          credentials: "include",
         },
-        body: JSON.stringify({
-          username,
-          password,
-        }),
-        credentials: "include",
-      });
+      );
 
       if (!response.ok) {
         const responseJson = await response.json();

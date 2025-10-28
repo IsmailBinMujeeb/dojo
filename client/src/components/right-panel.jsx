@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import { Input } from "./ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useNavigate } from "react-router-dom";
-import { Button } from "./ui/button";
-import { Spinner } from "./ui/spinner";
+import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 
 const RightPanel = () => {
   const [users, setUsers] = useState([]);
@@ -16,7 +16,7 @@ const RightPanel = () => {
     (async () => {
       try {
         const response = await fetch(
-          `http://localhost:3000/api/user/get-recent-users`,
+          `${import.meta.env.VITE_API_ENDPOINT}/user/get-recent-users`,
           {
             credentials: "include",
           },

@@ -4,6 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import PanelWrapper from "@/components/panel-wrapper";
 import { Protected } from "@/components/Protected";
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 
 const Following = () => {
   const { _id } = useParams();
@@ -15,7 +16,7 @@ const Following = () => {
     (async () => {
       try {
         const response = await fetch(
-          `http://localhost:3000/api/following/${_id}`,
+          `${import.meta.env.VITE_API_ENDPOINT}/following/${_id}`,
           { credentials: "include" },
         );
         const json = await response.json();

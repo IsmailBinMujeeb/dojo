@@ -11,13 +11,17 @@ import {
   EllipsisVertical,
   LockKeyhole,
 } from "lucide-react";
-import { Button } from "./ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { AuthContext } from "@/context/authContext";
 import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Textarea } from "./ui/textarea";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Dialog,
   DialogContent,
@@ -37,7 +41,7 @@ const CreatePost = () => {
     try {
       setIsUpdating(true);
 
-      await fetch(`http://localhost:3000/api/post`, {
+      await fetch(`${import.meta.env.VITE_API_ENDPOINT}/post`, {
         credentials: "include",
         method: "POST",
         headers: {
@@ -99,7 +103,7 @@ const LeftPanel = () => {
   async function logout() {
     try {
       setIsLoggingOut(true);
-      await fetch(`http://localhost:3000/api/user/logout`, {
+      await fetch(`${import.meta.env.VITE_API_ENDPOINT}/user/logout`, {
         credentials: "include",
         method: "POST",
       });

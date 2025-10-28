@@ -13,11 +13,13 @@ const Bookmarks = () => {
     if (!user?._id) return;
     (async () => {
       try {
-        const data = await fetch(`http://localhost:3000/api/bookmark`, {
-          credentials: "include",
-        });
+        const data = await fetch(
+          `${import.meta.env.VITE_API_ENDPOINT}/bookmark`,
+          {
+            credentials: "include",
+          },
+        );
         const json = await data.json();
-        console.log(json.data);
         setPosts(json.data);
       } catch (error) {
         console.error(error);

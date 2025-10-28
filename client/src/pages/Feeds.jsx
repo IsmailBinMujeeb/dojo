@@ -13,7 +13,7 @@ const Feeds = () => {
     if (!user?._id) return;
     (async () => {
       try {
-        const data = await fetch(`http://localhost:3000/api/post`, {
+        const data = await fetch(`${import.meta.env.VITE_API_ENDPOINT}/post`, {
           credentials: "include",
         });
         const json = await data.json();

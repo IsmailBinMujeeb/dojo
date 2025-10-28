@@ -39,15 +39,18 @@ const EditProfile = () => {
   async function submit() {
     try {
       setIsUpdating(true);
-      console.log(JSON.stringify(editedUser));
-      const response = await fetch(`http://localhost:3000/api/user`, {
-        credentials: "include",
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
+
+      const response = await fetch(
+        `${import.meta.env.VITE_API_ENDPOINT}/user`,
+        {
+          credentials: "include",
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(editedUser),
         },
-        body: JSON.stringify(editedUser),
-      });
+      );
 
       const json = await response.json();
       const data = json.data;
@@ -86,7 +89,7 @@ const EditProfile = () => {
             <Input
               id="name"
               name="name"
-              value={editedUser?.name || "Loading..."}
+              value={editedUser?.name}
               onChange={(e) => handleInput("name", e.target.value)}
             />
           </div>
@@ -95,7 +98,7 @@ const EditProfile = () => {
             <Input
               id="bio"
               name="bio"
-              value={editedUser?.bio || "Loading..."}
+              value={editedUser?.bio}
               onChange={(e) => handleInput("bio", e.target.value)}
             />
           </div>
@@ -104,7 +107,7 @@ const EditProfile = () => {
             <Input
               id="location"
               name="location"
-              value={editedUser?.location || "Loading..."}
+              value={editedUser?.location}
               onChange={(e) => handleInput("location", e.target.value)}
             />
           </div>
@@ -113,7 +116,7 @@ const EditProfile = () => {
             <Input
               id="website"
               name="website"
-              value={editedUser?.website || "Loading..."}
+              value={editedUser?.website}
               onChange={(e) => handleInput("website", e.target.value)}
             />
           </div>

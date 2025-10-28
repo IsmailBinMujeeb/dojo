@@ -4,6 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import PanelWrapper from "@/components/panel-wrapper";
 import { Protected } from "@/components/Protected";
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 
 const Explore = () => {
   const { searchQuery } = useParams();
@@ -15,7 +16,7 @@ const Explore = () => {
     (async () => {
       try {
         const response = await fetch(
-          `http://localhost:3000/api/explore/${searchQuery}`,
+          `${import.meta.env.VITE_API_ENDPOINT}/explore/${searchQuery}`,
           { credentials: "include" },
         );
         const json = await response.json();
