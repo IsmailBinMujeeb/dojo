@@ -5,7 +5,7 @@ import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "@/context/authContext";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { MapPin, Link2 } from "lucide-react";
+import { MapPin, Link2, MessageCircleMore } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Spinner } from "@/components/ui/spinner";
 import Post from "@/components/Post";
@@ -101,7 +101,14 @@ const Profile = () => {
             <AvatarImage src={profile?.avatar} alt={profile?.username} />
             <AvatarFallback>{profile?.username}</AvatarFallback>
           </Avatar>
-          <div className="float-right m-4">
+          <div className="float-right m-4 items-center flex flex-nowrap">
+            <Button
+              variant="secondary"
+              className="mx-2 bg-transparent cursor-pointer"
+              onClick={() => navigate(`/new-message/${profile?.username}`)}
+            >
+              <MessageCircleMore className="size-6" />
+            </Button>
             {isUserFollowingProfile ? (
               <Button
                 className="cursor-pointer"

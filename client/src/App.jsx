@@ -5,12 +5,15 @@ import Login from "@/pages/Login";
 import Profile from "@/pages/Profile";
 import User from "@/pages/User";
 import Feeds from "@/pages/Feeds";
+import Post from "@/pages/Post";
 import Followers from "@/pages/Followers";
 import Following from "@/pages/Following";
 import Bookmarks from "@/pages/Bookmarks";
 import Explore from "@/pages/Explore";
 import Notifications from "@/pages/Notifications";
 import Messages from "@/pages/Messages";
+import NewMessages from "@/pages/NewMessage";
+import Chat from "@/pages/Chat";
 import DojoAI from "@/pages/Dojoai";
 import Settings from "@/pages/Settings";
 import NotFound from "@/pages/NotFound";
@@ -27,10 +30,13 @@ function App() {
           <Route path="/followers/:_id" element={<Followers />} />
           <Route path="/following/:_id" element={<Following />} />
           <Route path="/feeds" element={<Feeds />} />
+          <Route path="/post/:id" element={<Post />} />
           <Route path="/bookmarks" element={<Bookmarks />} />
           <Route path="/explore/:searchQuery" element={<Explore />} />
           <Route path="/notifications" element={<Notifications />} />
           <Route path="/messages" element={<Messages />} />
+          <Route path="/new-message/:id" element={<NewMessages />} />
+          <Route path="/chat/:chatId" element={<Chat />} />
           <Route path="/dojoai" element={<DojoAI />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/notfound" element={<NotFound />} />

@@ -8,8 +8,6 @@ export default async (req, res, next) => {
     const incomingAccessToken =
       req.cookies['accessToken'] || req.headers['authorization']?.split(' ')?.[1];
 
-    console.log(req.cookies['accessToken']);
-
     if (!incomingAccessToken) throw ApiError.UNAUTHORIZED('missing access token');
 
     const decoded = jwt.verify(incomingAccessToken, env.ACCESS_TOKEN_SECRET);

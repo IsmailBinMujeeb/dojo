@@ -20,11 +20,9 @@ export const createPost = async (req, res) => {
 export const getPost = async (req, res) => {
   const { id } = req.params;
 
-  // const post = await postModel.findById(id);
-
-  const post = await postModel.aggregate([
+  const [post] = await postModel.aggregate([
     {
-      $match: { _id: mongoose.Types.ObjectId(id) },
+      $match: { _id: new mongoose.Types.ObjectId(id) },
     },
     {
       $lookup: {
@@ -38,20 +36,6 @@ export const getPost = async (req, res) => {
       $unwind: '$author',
     },
     {
-      $project: {
-        _id: 1,
-        content: 1,
-        author: {
-          _id: 1,
-          username: 1,
-          email: 1,
-          name: 1,
-          avatar: 1,
-          bio: 1,
-        },
-      },
-    },
-    {
       $lookup: {
         from: 'comments',
         localField: '_id',
@@ -61,7 +45,7 @@ export const getPost = async (req, res) => {
           {
             $lookup: {
               from: 'users',
-              localField: 'author',
+              localField: 'userId',
               foreignField: '_id',
               as: 'author',
             },
@@ -70,16 +54,11 @@ export const getPost = async (req, res) => {
             $unwind: '$author',
           },
           {
-            $project: {
-              _id: 1,
-              content: 1,
-              author: {
-                _id: 1,
-                username: 1,
-                email: 1,
-                name: 1,
-                avatar: 1,
-              },
+            $lookup: {
+              from: 'comments',
+              localField: '_id',
+              foreignField: 'parentComment',
+              as: 'comments',
             },
           },
           {
@@ -91,30 +70,14 @@ export const getPost = async (req, res) => {
             },
           },
           {
-            $unwind: '$likes',
-          },
-          {
-            $project: {
-              _id: 1,
-              content: 1,
-              author: {
-                _id: 1,
-                username: 1,
-                email: 1,
-                name: 1,
-                avatar: 1,
-              },
-              likes: {
-                _id: 1,
-                userId: 1,
-              },
+            $addFields: {
+              likesCount: { $size: '$likes' },
+              commentsCount: { $size: '$comments' },
+              createdAt: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
             },
           },
         ],
       },
-    },
-    {
-      $unwind: '$comments',
     },
     {
       $project: {
@@ -138,7 +101,19 @@ export const getPost = async (req, res) => {
             name: 1,
             avatar: 1,
           },
+          comments: {
+            _id: 1,
+          },
+          commentsCount: 1,
+          likes: {
+            _id: 1,
+          },
+          likesCount: 1,
+          createdAt: 1,
         },
+        views: 1,
+        createdAt: 1,
+        updatedAt: 1,
       },
     },
     {
@@ -150,10 +125,16 @@ export const getPost = async (req, res) => {
       },
     },
     {
-      $unwind: '$likes',
+      $addFields: {
+        likesCount: { $size: '$likes' },
+        commentsCount: { $size: '$comments' },
+        createdTime: { $dateToString: { format: '%H:%M', date: '$createdAt' } },
+        createdDate: { $dateToString: { format: '%b %d, %Y', date: '$createdAt' } },
+      },
     },
   ]);
 
+  console.log(post);
   if (!post) {
     throw ApiError.NOT_FOUND('Post not found');
   }

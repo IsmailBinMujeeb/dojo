@@ -5,9 +5,10 @@ import App from "./App.jsx";
 import { AuthProvider } from "./context/authContext";
 
 createRoot(document.getElementById("root")).render(
-  <StrictMode>
-    <AuthProvider>
-      <App />
-    </AuthProvider>
-  </StrictMode>,
+  // In strict mode the ws message were sending twice
+  // <StrictMode>
+  <AuthProvider>
+    <App />
+  </AuthProvider>,
+  // </StrictMode>,
 );

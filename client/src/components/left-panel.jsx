@@ -154,7 +154,7 @@ const LeftPanel = () => {
               className="flex gap-2 text-2xl items-center p-2 hover:bg-zinc-800 rounded-full"
               to="/messages"
             >
-              <LockKeyhole />
+              <Mail />
               Messages
             </Link>
           </li>

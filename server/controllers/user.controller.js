@@ -172,7 +172,7 @@ export const me = async (req, res) => {
   res.status(200).json(new ApiResponse(200, 'User details fetched successfully', user));
 };
 
-// GET api/user/profile/username
+// GET api/user/profile/:username
 export const getUserByUsername = async (req, res) => {
   const userId = req.user?._id;
   const [user] = await fetchUser({ username: req.params.username });
