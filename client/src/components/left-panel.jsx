@@ -203,7 +203,7 @@ const LeftPanel = () => {
             <AvatarImage src={user?.avatar} alt={user?.username} />
             <AvatarFallback>{user?.name}</AvatarFallback>
           </Avatar>
-          <div className="flex flex-col items-center justify-start">
+          <div className="flex flex-col items-start justify-start">
             <p className="text font-semibold">{user?.name}</p>
             <p className="text-xs text-gray-500">@{user?.username}</p>
           </div>

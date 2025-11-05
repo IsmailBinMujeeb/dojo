@@ -140,7 +140,7 @@ const Profile = () => {
     (async () => {
       try {
         const data = await fetch(
-          `http://localhost:3000/api/user/posts/${user._id}`,
+          `${import.meta.env.VITE_API_ENDPOINT}/user/posts/${user._id}`,
           {
             credentials: "include",
           },
@@ -221,6 +221,9 @@ const Profile = () => {
           <div className="border-t border-t-zinc-500">
             {posts &&
               posts.map((post) => <Post post={post} key={post._id}></Post>)}
+            <div className="p-4 text-center text-zinc-500 font-semibold">
+              This is all we have.
+            </div>
           </div>
         </div>
       </PanelWrapper>

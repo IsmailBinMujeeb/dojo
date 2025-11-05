@@ -63,6 +63,11 @@ const Explore = () => {
               </div>
             ))
           )}
+          {!isLoading && (
+            <div className="p-4 text-center text-zinc-500 font-semibold">
+              This is all we have.
+            </div>
+          )}
         </div>
       </PanelWrapper>
     </Protected>

@@ -166,6 +166,11 @@ const Profile = () => {
               posts &&
               posts.map((post) => <Post post={post} key={post._id}></Post>)
             )}
+            {!isPostsLoading && (
+              <div className="p-4 text-center text-zinc-500 font-semibold">
+                This is all we have.
+              </div>
+            )}
           </div>
         </div>
       </PanelWrapper>

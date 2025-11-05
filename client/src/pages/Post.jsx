@@ -6,22 +6,8 @@ import { useNavigate } from "react-router-dom";
 import { AuthContext } from "@/context/authContext";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTrigger,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Input } from "@/components/ui/input";
-import { MapPin, Link2, CalendarDays } from "lucide-react";
-import { Link } from "react-router-dom";
 import { Spinner } from "@/components/ui/spinner";
-import Post from "@/components/Post";
 import { useParams } from "react-router-dom";
 import {
   Sparkle,
@@ -43,9 +29,12 @@ const Profile = () => {
     if (!user?._id) return;
     (async () => {
       try {
-        const data = await fetch(`http://localhost:3000/api/post/${id}`, {
-          credentials: "include",
-        });
+        const data = await fetch(
+          `${import.meta.env.VITE_API_ENDPOINT}/post/${id}`,
+          {
+            credentials: "include",
+          },
+        );
 
         if (data.status === 404) {
           navigate("/not-found");
@@ -102,14 +91,17 @@ const Profile = () => {
 
   const handleCreateComment = async () => {
     if (!post._id) return;
-    const data = await fetch(`http://localhost:3000/api/comment/${post._id}`, {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
+    const data = await fetch(
+      `${import.meta.env.VITE_API_ENDPOINT}/comment/${post._id}`,
+      {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ content: replyText }),
       },
-      body: JSON.stringify({ content: replyText }),
-    });
+    );
 
     if (!data.ok) {
       console.error("Failed to create comment");
@@ -195,11 +187,8 @@ const Profile = () => {
           <div className="flex flex-col flex-nowrap gap-2 p-4">
             <div className="flex flex-nowrap gap-4">
               <Avatar className="size-12">
-                <AvatarImage
-                  src={post?.author?.avatar}
-                  alt={post?.author?.avatar}
-                />
-                <AvatarFallback>{post?.author?.username}</AvatarFallback>
+                <AvatarImage src={user?.avatar} alt={user?.avatar} />
+                <AvatarFallback>{user?.username}</AvatarFallback>
               </Avatar>
               <Textarea
                 placeholder="Post your reply..."
