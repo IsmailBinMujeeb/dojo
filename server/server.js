@@ -43,4 +43,8 @@ app.get('/api/health', (req, res) => {
   res.send('Server is healthy');
 });
 
+setInterval(() => {
+  fetch(`/api/health`).catch((error) => console.error(error));
+}, 3_00_000);
+
 export default app;
