@@ -120,7 +120,7 @@ export const getAllChats = async (req, res) => {
     },
   ]);
 
-  console.log(chats, 'chats');
+  console.log(chats, userId, 'chats');
 
   return res.status(200).json(new ApiResponse(200, 'chats retrieved successfully', chats));
 };
