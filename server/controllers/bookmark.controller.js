@@ -94,7 +94,8 @@ export const getBookmarks = async (req, res) => {
             $addFields: {
               likesCount: { $size: '$likes' },
               commentsCount: { $size: '$comments' },
-              createdAt: { $dateToString: { format: '%b %Y', date: '$createdAt' } },
+              isLiked: { $in: [new mongoose.Types.ObjectId(userId), '$likes.userId'] },
+              isBookmarked: true,
             },
           },
         ],

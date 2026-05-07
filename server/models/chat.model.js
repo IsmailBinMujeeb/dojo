@@ -13,19 +13,18 @@ const chatSchema = new mongoose.Schema(
       require: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 chatSchema.index({ userIdOne: 1, userIdTwo: 1 }, { unique: true });
 
-chatSchema.pre('save', function (next) {
+chatSchema.pre('save', function () {
   if (this.userIdOne.toString() > this.userIdTwo.toString()) {
     // swap so userIdOne is always the smaller one
     const temp = this.userIdOne;
     this.userIdOne = this.userIdTwo;
     this.userIdTwo = temp;
   }
-  next();
 });
 
 export default mongoose.model('Chat', chatSchema);

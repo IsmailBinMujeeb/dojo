@@ -1,10 +1,17 @@
 import likeModel from '../models/like.model.js';
 import ApiResponse from '../utils/apiResponse.js';
+import { notificationQueue } from '../queues/notification.queue.js';
+import postModel from '../models/post.model.js';
 
 // POST api/like/:postId
 export const toggleLike = async (req, res) => {
   const { postId } = req.params;
   const userId = req.user._id;
+
+  const isPostExists = await postModel.findOne({ _id: postId });
+  if (!isPostExists) {
+    return res.status(404).json(new ApiResponse(404, 'Post not found'));
+  }
 
   const existingLike = await likeModel.findOne({ postId, userId });
 
@@ -13,6 +20,12 @@ export const toggleLike = async (req, res) => {
     return res.status(200).json(new ApiResponse(200, 'Deleted like', deletedLike));
   } else {
     const newLike = await likeModel.create({ postId, userId });
+    await notificationQueue.add('notification', {
+      userId: isPostExists.author,
+      type: 'like',
+      postId,
+      likeId: newLike._id,
+    });
     return res.status(201).json(new ApiResponse(201, 'Like added', newLike));
   }
 };
@@ -29,7 +42,7 @@ export const getLikes = async (req, res) => {
       limit,
       sort: { createdAt: -1 },
       populate: { path: 'user', select: 'username name avatar _id' },
-    }
+    },
   );
 
   return res.status(200).json(new ApiResponse(200, 'Likes retrieved', likes));

@@ -2,6 +2,7 @@ import { isValidObjectId } from 'mongoose';
 import followerModel from '../models/follower.model.js';
 import ApiResponse from '../utils/apiResponse.js';
 import ApiError from '../utils/apiError.js';
+import { notificationQueue } from '../queues/notification.queue.js';
 
 // POST api/follower/:followedToId
 export const toggleFollower = async (req, res) => {
@@ -29,6 +30,12 @@ export const toggleFollower = async (req, res) => {
       followedBy: followedById,
       followedTo: followedToId,
     });
+
+    await notificationQueue.add('notification', {
+      type: 'follow',
+      userId: followedToId,
+      followerId: followedById,
+    });
     return res.status(201).json(new ApiResponse(201, 'Follower added', newFollower));
   }
 };
@@ -49,7 +56,7 @@ export const getFollowers = async (req, res) => {
       limit,
       sort: { createdAt: -1 },
       populate: [{ path: 'followedBy', select: 'username name avatar _id bio' }],
-    }
+    },
   );
 
   return res.status(200).json(new ApiResponse(200, 'Followers retrieved', followers));
@@ -71,7 +78,7 @@ export const getFollowing = async (req, res) => {
       limit,
       sort: { createdAt: -1 },
       populate: [{ path: 'followedTo', select: 'username name avatar _id bio' }],
-    }
+    },
   );
 
   return res.status(200).json(new ApiResponse(200, 'Following retrieved', following));

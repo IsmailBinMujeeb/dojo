@@ -10,172 +10,188 @@ import { Link } from "react-router-dom";
 import { Spinner } from "@/components/ui/spinner";
 import Post from "@/components/Post";
 import { useParams, useNavigate } from "react-router-dom";
+import { ProfileDetails } from "@/components/ProfileDetailsCard";
 
 const Profile = () => {
-  const { user } = useContext(AuthContext);
-  const { username } = useParams();
-  const [posts, setPosts] = useState([]);
-  const [isPostsLoading, setIsPostsLoading] = useState(true);
-  const [isFollowingLoading, setIsFollowingLoading] = useState(false);
-  const [profile, setProfile] = useState({});
-  const navigate = useNavigate();
-  const [isUserFollowingProfile, setIsUserFollowingProfile] = useState();
+    const { user } = useContext(AuthContext);
+    const { username } = useParams();
+    const [posts, setPosts] = useState([]);
+    const [isPostsLoading, setIsPostsLoading] = useState(true);
+    const [isFollowingLoading, setIsFollowingLoading] = useState(false);
+    const [profile, setProfile] = useState({});
+    const navigate = useNavigate();
+    const [isUserFollowingProfile, setIsUserFollowingProfile] = useState();
 
-  useEffect(() => {
-    if (!user?._id) return;
+    useEffect(() => {
+        if (!user?._id) return;
 
-    (async () => {
-      try {
-        const data = await fetch(
-          `${import.meta.env.VITE_API_ENDPOINT}/user/profile/${username}`,
-          {
-            credentials: "include",
-          },
-        );
-        const json = await data.json();
+        (async () => {
+            try {
+                const data = await fetch(
+                    `${import.meta.env.VITE_API_ENDPOINT}/user/profile/${username}`,
+                    {
+                        credentials: "include",
+                    },
+                );
+                const json = await data.json();
 
-        if (!json.data) {
-          navigate("/notfound");
+                if (!json.data) {
+                    navigate("/notfound");
+                }
+
+                if (json.data.isProfileBelongsToAthenticatedUser)
+                    return navigate("/profile");
+                if (json.data.isUserFollowingProfile)
+                    setIsUserFollowingProfile(true);
+
+                setProfile(json.data);
+            } catch (error) {
+                console.error(error);
+            }
+        })();
+
+        (async () => {
+            try {
+                const response = await fetch(
+                    `${import.meta.env.VITE_API_ENDPOINT}/user/posts/${profile._id}`,
+                    {
+                        credentials: "include",
+                    },
+                );
+                const json = await response.json();
+                console.log(json.data);
+                setPosts(json.data);
+            } catch (error) {
+                console.error(error);
+            } finally {
+                setIsPostsLoading(false);
+            }
+        })();
+    }, [user?._id, profile?._id, navigate, username]);
+
+    async function handleFollow() {
+        try {
+            setIsFollowingLoading(true);
+            await fetch(
+                `${import.meta.env.VITE_API_ENDPOINT}/follower/${profile?._id}`,
+                {
+                    credentials: "include",
+                    method: "POST",
+                },
+            );
+
+            setIsUserFollowingProfile((prev) => !prev);
+        } catch (error) {
+            console.log(error);
+        } finally {
+            setIsFollowingLoading(false);
         }
-
-        if (json.data.isProfileBelongsToAthenticatedUser)
-          return navigate("/profile");
-        if (json.data.isUserFollowingProfile) setIsUserFollowingProfile(true);
-
-        setProfile(json.data);
-      } catch (error) {
-        console.error(error);
-      }
-    })();
-
-    (async () => {
-      try {
-        const response = await fetch(
-          `${import.meta.env.VITE_API_ENDPOINT}/user/posts/${profile._id}`,
-          {
-            credentials: "include",
-          },
-        );
-        const json = await response.json();
-
-        setPosts(json.data);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setIsPostsLoading(false);
-      }
-    })();
-  }, [user?._id, profile?._id, navigate, username]);
-
-  async function handleFollow() {
-    try {
-      setIsFollowingLoading(true);
-      await fetch(
-        `${import.meta.env.VITE_API_ENDPOINT}/follower/${profile?._id}`,
-        {
-          credentials: "include",
-          method: "POST",
-        },
-      );
-
-      setIsUserFollowingProfile((prev) => !prev);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setIsFollowingLoading(false);
     }
-  }
 
-  return (
-    <Protected>
-      <PanelWrapper>
+    return (
         <div className="relative w-full h-full">
-          <AspectRatio ratio={3 / 1}>
-            <img
-              src={profile?.coverPhoto}
-              alt={profile?.username}
-              className="w-full"
-            />
-          </AspectRatio>
-          <Avatar className="size-[135px] absolute top-[135px] left-1/40">
-            <AvatarImage src={profile?.avatar} alt={profile?.username} />
-            <AvatarFallback>{profile?.username}</AvatarFallback>
-          </Avatar>
-          <div className="float-right m-4 items-center flex flex-nowrap">
-            <Button
-              variant="secondary"
-              className="mx-2 bg-transparent cursor-pointer"
-              onClick={() => navigate(`/new-message/${profile?.username}`)}
-            >
-              <MessageCircleMore className="size-6" />
-            </Button>
-            {isUserFollowingProfile ? (
-              <Button
-                className="cursor-pointer"
-                variant={"destructive"}
-                onClick={handleFollow}
-              >
-                {isFollowingLoading ? "Unfollowing..." : "Unfollow"}
-              </Button>
-            ) : (
-              <Button className="cursor-pointer" onClick={handleFollow}>
-                {isFollowingLoading ? "Following..." : "Follow"}
-              </Button>
-            )}
-          </div>
-          <div className="my-4">
-            <div className="m-8 gap-2 flex flex-col">
-              <div className="flex flex-col gap">
-                <div className="text-2xl font-bold">{profile?.name}</div>
-                <div className="text-zinc-500">@{profile?.username}</div>
-              </div>
-              <div className="font-light">{profile?.bio}</div>
-              <div className="flex gap-6 text-zinc-500">
-                <div className="flex items-center gap-2">
-                  <MapPin className="size-4" /> {profile?.location}
-                </div>
-                <div className="flex items-center gap-2">
-                  <Link2 className="size-4" />{" "}
-                  <a href={profile?.website} className="text-blue-400">
-                    {profile?.website}
-                  </a>
-                </div>
-              </div>
-              <div className="text-zinc-500 flex gap-4 ">
-                <Link to={`/followers/${profile?._id}`}>
-                  <span className="text-white font-semibold">
-                    {profile?.followersCount}
-                  </span>{" "}
-                  Followers
-                </Link>
-                <Link to={`/following/${profile?._id}`}>
-                  <span className="text-white font-semibold">
-                    {profile?.followingCount}
-                  </span>{" "}
-                  Following
-                </Link>
-              </div>
+            {/* <AspectRatio ratio={3 / 1}>
+                <img
+                    src={profile?.coverPhoto}
+                    alt={profile?.username}
+                    className="w-full"
+                />
+            </AspectRatio>
+            <Avatar className="size-[135px] absolute top-[135px] left-1/40">
+                <AvatarImage src={profile?.avatar} alt={profile?.username} />
+                <AvatarFallback>{profile?.username}</AvatarFallback>
+            </Avatar>
+            <div className="float-right m-4 items-center flex flex-nowrap">
+                <Button
+                    variant="secondary"
+                    className="mx-2 bg-transparent cursor-pointer"
+                    onClick={() =>
+                        navigate(`/new-message/${profile?.username}`)
+                    }
+                >
+                    <MessageCircleMore className="size-6" />
+                </Button>
+                {isUserFollowingProfile ? (
+                    <Button
+                        className="cursor-pointer"
+                        variant={"destructive"}
+                        onClick={handleFollow}
+                    >
+                        {isFollowingLoading ? "Unfollowing..." : "Unfollow"}
+                    </Button>
+                ) : (
+                    <Button className="cursor-pointer" onClick={handleFollow}>
+                        {isFollowingLoading ? "Following..." : "Follow"}
+                    </Button>
+                )}
             </div>
-          </div>
-          <div className="border-t border-t-zinc-500">
-            {isPostsLoading ? (
-              <div className="w-full my-8 flex justify-center items-center">
-                <Spinner className="size-8 text-blue-500" />
-              </div>
-            ) : (
-              posts &&
-              posts.map((post) => <Post post={post} key={post._id}></Post>)
-            )}
-            {!isPostsLoading && (
-              <div className="p-4 text-center text-zinc-500 font-semibold">
-                This is all we have.
-              </div>
-            )}
-          </div>
+            <div className="my-4">
+                <div className="m-8 gap-2 flex flex-col">
+                    <div className="flex flex-col gap">
+                        <div className="text-2xl font-bold">
+                            {profile?.name}
+                        </div>
+                        <div className="text-zinc-500">
+                            @{profile?.username}
+                        </div>
+                    </div>
+                    <div className="font-light">{profile?.bio}</div>
+                    <div className="flex gap-6 text-zinc-500">
+                        <div className="flex items-center gap-2">
+                            <MapPin className="size-4" /> {profile?.location}
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <Link2 className="size-4" />{" "}
+                            <a
+                                href={profile?.website}
+                                className="text-blue-400"
+                            >
+                                {profile?.website}
+                            </a>
+                        </div>
+                    </div>
+                    <div className="text-zinc-500 flex gap-4 ">
+                        <Link to={`/followers/${profile?._id}`}>
+                            <span className="text-white font-semibold">
+                                {profile?.followersCount}
+                            </span>{" "}
+                            Followers
+                        </Link>
+                        <Link to={`/following/${profile?._id}`}>
+                            <span className="text-white font-semibold">
+                                {profile?.followingCount}
+                            </span>{" "}
+                            Following
+                        </Link>
+                    </div>
+                </div>
+            </div>*/}
+            <ProfileDetails
+                user={profile}
+                isFollowingLoading={isFollowingLoading}
+                isUserFollowingProfile={isUserFollowingProfile}
+                onFollow={handleFollow}
+                postsCount={posts?.length || 0}
+            />
+            <div className="px-6">
+                {isPostsLoading ? (
+                    <div className="w-full my-8 flex justify-center items-center">
+                        <Spinner className="size-8 text-blue-500" />
+                    </div>
+                ) : (
+                    posts &&
+                    posts.map((post) => (
+                        <Post post={post} key={post._id}></Post>
+                    ))
+                )}
+                {!isPostsLoading && (
+                    <div className="p-4 text-center text-zinc-500 font-semibold">
+                        This is all we have.
+                    </div>
+                )}
+            </div>
         </div>
-      </PanelWrapper>
-    </Protected>
-  );
+    );
 };
 
 export default Profile;

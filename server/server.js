@@ -11,6 +11,8 @@ import bookmarkRouter from './routes/bookmark.route.js';
 import followerRouter from './routes/follower.route.js';
 import exploreRouter from './routes/explore.route.js';
 import chatRouter from './routes/chat.route.js';
+// import aiChatRouter from './routes/ai.chat.route.js';
+
 import morgan from 'morgan';
 
 const app = express();
@@ -37,6 +39,7 @@ app.use('/api/comment-like', commentLikeRouter);
 app.use('/api/bookmark', bookmarkRouter);
 app.use('/api/explore', exploreRouter);
 app.use('/api/chat', chatRouter);
+// app.use('/api/ai-chat', aiChatRouter);
 app.use('/api', followerRouter);
 
 app.get('/api/health', (req, res) => {

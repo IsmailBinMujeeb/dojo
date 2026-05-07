@@ -1,0 +1,24 @@
+{
+  "name": "dojo",
+  "version": "1.0.0",
+  "description": "- **Frontend**   - [![React](https://img.shields.io/badge/-ReactJs-2B2E3A?logo=react&logoColor=fff)](#)   - [![Tailwind](https://img.shields.io/badge/Tailwind-2B2E3A?logo=tailwindcss&logoColor=fff)](#)   - [![ShadCN](https://img.shields.io/badge/ShadCN-2B2E3A?logo=shadcnui&logoColor=fff)](#)",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently \"cd client && npm run dev\" \"cd server && npm run dev\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/IsmailBinMujeeb/dojo.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/IsmailBinMujeeb/dojo/issues"
+  },
+  "homepage": "https://github.com/IsmailBinMujeeb/dojo#readme",
+  "dependencies": {
+    "concurrently": "^9.2.1"
+  }
+}

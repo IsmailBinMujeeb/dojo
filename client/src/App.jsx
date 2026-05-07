@@ -9,6 +9,7 @@ import Post from "@/pages/Post";
 import Followers from "@/pages/Followers";
 import Following from "@/pages/Following";
 import Bookmarks from "@/pages/Bookmarks";
+import ExploreIndex from "@/pages/ExploreIndex";
 import Explore from "@/pages/Explore";
 import Notifications from "@/pages/Notifications";
 import Messages from "@/pages/Messages";
@@ -17,34 +18,41 @@ import Chat from "@/pages/Chat";
 import DojoAI from "@/pages/Dojoai";
 import Settings from "@/pages/Settings";
 import NotFound from "@/pages/NotFound";
+import Layout from "./Layout";
 
 function App() {
-  return (
-    <>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/followers/:_id" element={<Followers />} />
-          <Route path="/following/:_id" element={<Following />} />
-          <Route path="/feeds" element={<Feeds />} />
-          <Route path="/post/:id" element={<Post />} />
-          <Route path="/bookmarks" element={<Bookmarks />} />
-          <Route path="/explore/:searchQuery" element={<Explore />} />
-          <Route path="/notifications" element={<Notifications />} />
-          <Route path="/messages" element={<Messages />} />
-          <Route path="/new-message/:id" element={<NewMessages />} />
-          <Route path="/chat/:chatId" element={<Chat />} />
-          <Route path="/dojoai" element={<DojoAI />} />
-          <Route path="/settings" element={<Settings />} />
-          <Route path="/notfound" element={<NotFound />} />
-          <Route path="/:username" element={<User />} />
-        </Routes>
-      </BrowserRouter>
-    </>
-  );
+    return (
+        <BrowserRouter>
+            <Routes>
+                {/* Public routes (no layout) */}
+                <Route path="/" element={<Home />} />
+                <Route path="signup" element={<Signup />} />
+                <Route path="login" element={<Login />} />
+
+                {/* Routes with Layout */}
+                <Route path="/" element={<Layout />}>
+                    <Route path="profile" element={<Profile />} />
+                    <Route path="followers/:_id" element={<Followers />} />
+                    <Route path="following/:_id" element={<Following />} />
+                    <Route path="feeds" element={<Feeds />} />
+                    <Route path="post/:id" element={<Post />} />
+                    <Route path="bookmarks" element={<Bookmarks />} />
+                    <Route path="explore" element={<ExploreIndex />} />
+                    <Route path="explore/:searchQuery" element={<Explore />} />
+                    <Route path="notifications" element={<Notifications />} />
+                    <Route path="messages" element={<Messages />} />
+                    <Route path="new-message/:id" element={<NewMessages />} />
+                    <Route path="chat/:chatId" element={<Chat />} />
+                    <Route path="dojoai" element={<DojoAI />} />
+                    <Route path="settings" element={<Settings />} />
+                    <Route path=":username" element={<User />} />
+                </Route>
+
+                {/* 404 */}
+                <Route path="*" element={<NotFound />} />
+            </Routes>
+        </BrowserRouter>
+    );
 }
 
 export default App;

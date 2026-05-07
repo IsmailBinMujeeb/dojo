@@ -5,6 +5,7 @@ import env from '../config/env.js';
 import messageModel from '../models/message.model.js';
 
 const server = http.createServer(app);
+console.log(env.CORS_ORIGIN);
 
 const io = new Server(server, {
   cors: {

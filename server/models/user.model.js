@@ -61,19 +61,23 @@ const userSchema = new mongoose.Schema(
         'https://business.x.com/content/dam/business-twitter/textured-backgrounds/banner-full-blue-scratch.jpg.twimg.1280.jpg',
     },
 
+    academicRank: {
+      type: String,
+      default: null,
+    },
+
     refreshToken: {
       type: String,
       default: null,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
-userSchema.pre('save', async function (next) {
-  if (!this.isModified('password')) return next();
+userSchema.pre('save', async function () {
+  if (!this.isModified('password')) return;
 
   this.password = await bcrypt.hash(this.password, 10);
-  next();
 });
 
 userSchema.methods.comparePassword = async function (password) {

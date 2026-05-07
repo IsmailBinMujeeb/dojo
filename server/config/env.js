@@ -14,4 +14,8 @@ export default {
   REFRESH_TOKEN_SECRET: String(process.env.REFRESH_TOKEN_SECRET || 'refresh_token_secret'),
   REFRESH_TOKEN_EXPIRY: String(process.env.REFRESH_TOKEN_EXPIRY || 'refresh_token_expiry'),
   CORS_ORIGIN: String(process.env.CORS_ORIGIN || '').split(','),
+  REDIS_HOST: String(process.env.REDIS_HOST || 'localhost'),
+  REDIS_PORT: Number(process.env.REDIS_PORT || 6379),
+  REDIS_PASSWORD: String(process.env.REDIS_PASSWORD || ''),
+  GOOGLE_API_KEY: String(process.env.GOOGLE_API_KEY || 'your_gemini_api_key'),
 };

@@ -8,24 +8,29 @@
     "dev": "nodemon index.js",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "quar": "quar --model ./models --db dojoDB --uri mongodb://localhost:27017/"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "module",
   "dependencies": {
+    "@langchain/google-genai": "^2.1.27",
     "bcrypt": "^6.0.0",
+    "bullmq": "^5.73.1",
     "cloudinary": "^2.8.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.19.2",
+    "langchain": "^1.3.3",
+    "mongoose": "^9.1.5",
     "mongoose-paginate-v2": "^1.9.1",
     "morgan": "^1.10.1",
     "multer": "^2.0.2",
+    "sarvam": "^1.0.2",
     "socket.io": "^4.8.1"
   },
   "devDependencies": {
@@ -38,6 +43,6 @@
     "globals": "^16.4.0",
     "nodemon": "^3.1.10",
     "prettier": "^3.6.2",
-    "quar": "^1.2.7"
+    "quar": "^2.0.1"
   }
 }

@@ -91,7 +91,7 @@ export const getAllChats = async (req, res) => {
       },
     },
     {
-      $unwind: '$recentMessage',
+      $unwind: { path: '$recentMessage', preserveNullAndEmptyArrays: true },
     },
     {
       $project: {
@@ -101,18 +101,20 @@ export const getAllChats = async (req, res) => {
           username: 1,
           name: 1,
           avatar: 1,
+          academicRank: 1,
         },
         userIdTwo: {
           _id: 1,
           username: 1,
           name: 1,
           avatar: 1,
+          academicRank: 1,
         },
         recentMessage: {
           _id: 1,
           chatId: 1,
           senderId: 1,
-          recieverId: 1,
+          receiverId: 1,
           message: 1,
           createdAt: 1,
         },
@@ -170,6 +172,28 @@ export const getChat = async (req, res) => {
           {
             $sort: { createdAt: -1 },
           },
+          {
+            $lookup: {
+              from: 'users',
+              localField: 'senderId',
+              foreignField: '_id',
+              as: 'sender',
+            },
+          },
+          {
+            $unwind: '$sender',
+          },
+          {
+            $lookup: {
+              from: 'users',
+              localField: 'receiverId',
+              foreignField: '_id',
+              as: 'receiver',
+            },
+          },
+          {
+            $unwind: '$receiver',
+          },
         ],
       },
     },
@@ -181,18 +205,22 @@ export const getChat = async (req, res) => {
           username: 1,
           name: 1,
           avatar: 1,
+          academicRank: 1,
         },
         userTwo: {
           _id: 1,
           username: 1,
           name: 1,
           avatar: 1,
+          academicRank: 1,
         },
         messages: {
           _id: 1,
           chatId: 1,
           senderId: 1,
-          recieverId: 1,
+          receiverId: 1,
+          sender: 1,
+          receiver: 1,
           message: 1,
           createdAt: 1,
         },

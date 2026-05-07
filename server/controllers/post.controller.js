@@ -19,6 +19,7 @@ export const createPost = async (req, res) => {
 // GET api/post/:id
 export const getPost = async (req, res) => {
   const { id } = req.params;
+  const userId = req.user?._id;
 
   const [post] = await postModel.aggregate([
     {
@@ -42,6 +43,9 @@ export const getPost = async (req, res) => {
         foreignField: 'postId',
         as: 'comments',
         pipeline: [
+          {
+            $match: { parentComment: null },
+          },
           {
             $lookup: {
               from: 'users',
@@ -72,8 +76,10 @@ export const getPost = async (req, res) => {
           {
             $addFields: {
               likesCount: { $size: '$likes' },
+              isLiked: {
+                $in: [new mongoose.Types.ObjectId(userId), '$likes.userId'],
+              },
               commentsCount: { $size: '$comments' },
-              createdAt: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
             },
           },
         ],
@@ -107,11 +113,13 @@ export const getPost = async (req, res) => {
           commentsCount: 1,
           likes: {
             _id: 1,
+            userId: 1,
+            commentId: 1,
           },
+          isLiked: 1,
           likesCount: 1,
           createdAt: 1,
         },
-        views: 1,
         createdAt: 1,
         updatedAt: 1,
       },
@@ -125,11 +133,18 @@ export const getPost = async (req, res) => {
       },
     },
     {
+      $lookup: {
+        from: 'bookmarks',
+        localField: '_id',
+        foreignField: 'postId',
+        as: 'bookmarks',
+      },
+    },
+    {
       $addFields: {
         likesCount: { $size: '$likes' },
         commentsCount: { $size: '$comments' },
-        createdTime: { $dateToString: { format: '%H:%M', date: '$createdAt' } },
-        createdDate: { $dateToString: { format: '%b %d, %Y', date: '$createdAt' } },
+        bookmarksCount: { $size: '$bookmarks' },
       },
     },
   ]);
@@ -145,6 +160,7 @@ export const getPost = async (req, res) => {
 // GET api/post
 export const getPosts = async (req, res) => {
   const { page = 1, limit = 50 } = req.query;
+  const userId = req.user._id;
 
   const skip = (page - 1) * limit;
   const posts = await postModel.aggregate([
@@ -180,6 +196,14 @@ export const getPosts = async (req, res) => {
     },
     {
       $lookup: {
+        from: 'bookmarks',
+        localField: '_id',
+        foreignField: 'postId',
+        as: 'bookmarks',
+      },
+    },
+    {
+      $lookup: {
         from: 'comments',
         localField: '_id',
         foreignField: 'postId',
@@ -190,7 +214,12 @@ export const getPosts = async (req, res) => {
       $addFields: {
         likesCount: { $size: '$likes' },
         commentsCount: { $size: '$comments' },
-        createdAt: { $dateToString: { format: '%b %Y', date: '$createdAt' } },
+        isLiked: {
+          $in: [new mongoose.Types.ObjectId(userId), '$likes.userId'],
+        },
+        isBookmarked: {
+          $in: [new mongoose.Types.ObjectId(userId), '$bookmarks.userId'],
+        },
       },
     },
   ]);

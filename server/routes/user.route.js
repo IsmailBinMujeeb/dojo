@@ -7,6 +7,7 @@ import {
   getUserByUsername,
   getRecentUsers,
   getUsersPost,
+  getUsersNotifications,
   refreshAccessToken,
   registerUser,
   updateUser,
@@ -25,12 +26,8 @@ router.get('/me', authMiddleware, asyncHandler(me));
 router.get('/profile/:username', authMiddleware, asyncHandler(getUserByUsername));
 router.get('/get-recent-users', authMiddleware, asyncHandler(getRecentUsers));
 router.get('/posts/:userId', authMiddleware, asyncHandler(getUsersPost));
-router.put(
-  '/',
-  authMiddleware,
-  upload.fields([{ name: 'avatar' }, { name: 'coverPhoto' }]),
-  asyncHandler(updateUser)
-);
+router.get('/notifications/:userId', authMiddleware, asyncHandler(getUsersNotifications));
+router.put('/', authMiddleware, upload.single('avatar'), asyncHandler(updateUser));
 router.delete('/', authMiddleware, asyncHandler(deleteUser));
 
 export default router;

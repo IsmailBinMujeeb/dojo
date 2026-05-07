@@ -3,6 +3,8 @@ import commentModel from '../models/comment.model.js';
 import ApiError from '../utils/apiError.js';
 import postModel from '../models/post.model.js';
 import ApiResponse from '../utils/apiResponse.js';
+import mongoose from 'mongoose';
+import { notificationQueue } from '../queues/notification.queue.js';
 
 // POST api/comment/:postId
 export const createComment = async (req, res) => {
@@ -49,17 +51,135 @@ export const createComment = async (req, res) => {
   }
   await comment.save();
 
+  await notificationQueue.add('notification', {
+    type: 'comment',
+    userId: userId,
+    commentId: comment._id,
+  });
+
   return res.status(201).json(new ApiResponse(201, 'Comment created successfully', comment));
 };
 
 // GET api/comment/:commentId
 export const getComment = async (req, res) => {
   const { commentId } = req.params;
+  const userId = req.user?._id;
 
-  const comment = await commentModel.findById(commentId).populate([
-    { path: 'userId', select: 'name username avatar' },
-    { path: 'parentComment', populate: { path: 'userId', select: 'username' } },
-    { path: 'postId', select: 'content' },
+  const [comment] = await commentModel.aggregate([
+    {
+      $match: { _id: new mongoose.Types.ObjectId(commentId) },
+    },
+    {
+      $lookup: {
+        from: 'users',
+        localField: 'userId',
+        foreignField: '_id',
+        as: 'author',
+      },
+    },
+    {
+      $unwind: '$author',
+    },
+    {
+      $lookup: {
+        from: 'comments',
+        localField: '_id',
+        foreignField: 'parentComment',
+        as: 'comments',
+        pipeline: [
+          {
+            $lookup: {
+              from: 'users',
+              localField: 'userId',
+              foreignField: '_id',
+              as: 'author',
+            },
+          },
+          {
+            $unwind: '$author',
+          },
+          {
+            $lookup: {
+              from: 'comments',
+              localField: '_id',
+              foreignField: 'parentComment',
+              as: 'comments',
+            },
+          },
+          {
+            $lookup: {
+              from: 'commentlikes',
+              localField: '_id',
+              foreignField: 'commentId',
+              as: 'likes',
+            },
+          },
+          {
+            $addFields: {
+              likesCount: { $size: '$likes' },
+              isLiked: {
+                $in: [new mongoose.Types.ObjectId(userId), '$likes.userId'],
+              },
+              commentsCount: { $size: '$comments' },
+            },
+          },
+        ],
+      },
+    },
+    {
+      $project: {
+        _id: 1,
+        content: 1,
+        postId: 1,
+        author: {
+          _id: 1,
+          username: 1,
+          email: 1,
+          name: 1,
+          avatar: 1,
+          bio: 1,
+        },
+        comments: {
+          _id: 1,
+          content: 1,
+          author: {
+            _id: 1,
+            username: 1,
+            email: 1,
+            name: 1,
+            avatar: 1,
+          },
+          comments: {
+            _id: 1,
+          },
+          commentsCount: 1,
+          likes: {
+            _id: 1,
+            userId: 1,
+            commentId: 1,
+          },
+          isLiked: 1,
+          likesCount: 1,
+          createdAt: 1,
+        },
+        createdAt: 1,
+        updatedAt: 1,
+      },
+    },
+    {
+      $lookup: {
+        from: 'commentlikes',
+        localField: '_id',
+        foreignField: 'commentId',
+        as: 'likes',
+      },
+    },
+    {
+      $addFields: {
+        likesCount: { $size: '$likes' },
+        commentsCount: { $size: '$comments' },
+      },
+    },
   ]);
 
   if (!comment) {

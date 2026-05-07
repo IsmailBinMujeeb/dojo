@@ -4,6 +4,8 @@ import ApiError from '../utils/apiError.js';
 import ApiResponse from '../utils/apiResponse.js';
 import setAuthCookies from '../utils/setAuthCookies.js';
 import postModel from '../models/post.model.js';
+import cloudinary from '../utils/cloudinary.js';
+import notificationModel from '../models/notification.model.js';
 
 const fetchUser = async (query) => {
   return await userModel.aggregate([
@@ -38,6 +40,7 @@ const fetchUser = async (query) => {
                 name: 1,
                 avatar: 1,
                 coverPhoto: 1,
+                academicRank: 1,
               },
             },
           },
@@ -153,7 +156,7 @@ export const logoutUser = async (req, res) => {
 
   await userModel.findOneAndUpdate(
     { refreshToken: incomingRefreshToken },
-    { $unset: { refreshToken: 1 } }
+    { $unset: { refreshToken: 1 } },
   );
 
   res.clearCookie('accessToken');
@@ -182,7 +185,7 @@ export const getUserByUsername = async (req, res) => {
   }
 
   const isUserFollowingProfile = user.followers?.some(
-    (follower) => userId === follower.user._id.toString()
+    (follower) => userId === follower.user._id.toString(),
   );
 
   const isProfileBelongsToAthenticatedUser = userId === user._id.toString();
@@ -192,7 +195,7 @@ export const getUserByUsername = async (req, res) => {
       ...user,
       isProfileBelongsToAthenticatedUser,
       isUserFollowingProfile,
-    })
+    }),
   );
 };
 
@@ -210,8 +213,10 @@ export const getRecentUsers = async (req, res) => {
 // GET api/user/posts/:userId
 export const getUsersPost = async (req, res) => {
   const { userId } = req.params;
+  const authenticatedUserId = req.user._id;
   const { limit = 10, page = 1 } = req.query;
 
+  console.log('user', userId);
   if (limit < 1 || page < 1) {
     throw ApiError.BAD_REQUEST('Invalid quary');
   }
@@ -263,15 +268,186 @@ export const getUsersPost = async (req, res) => {
       },
     },
     {
+      $lookup: {
+        from: 'bookmarks',
+        localField: '_id',
+        foreignField: 'postId',
+        as: 'bookmarks',
+      },
+    },
+    {
       $addFields: {
         likesCount: { $size: '$likes' },
         commentsCount: { $size: '$comments' },
-        createdAt: { $dateToString: { format: '%b %Y', date: '$createdAt' } },
+        isLiked: {
+          $in: [new mongoose.Types.ObjectId(authenticatedUserId), '$likes.userId'],
+        },
+        isBookmarked: {
+          $in: [new mongoose.Types.ObjectId(authenticatedUserId), '$bookmarks.userId'],
+        },
       },
     },
   ]);
 
   return res.status(200).json(new ApiResponse(200, 'User posts fetched successfully', posts));
+};
+
+export const getUsersNotifications = async (req, res) => {
+  const userId = req.user?._id;
+  const { limit = 10, page = 1 } = req.query;
+
+  if (limit < 1 || page < 1) {
+    throw ApiError.BAD_REQUEST('Invalid quary');
+  }
+
+  if (!isValidObjectId(userId)) {
+    throw ApiError.BAD_REQUEST('Invalid user id');
+  }
+
+  const skip = (page - 1) * limit;
+
+  const notifications = await notificationModel.aggregate([
+    { $match: { userId: new mongoose.Types.ObjectId(userId) } },
+    { $skip: skip },
+    { $limit: limit },
+    { $sort: { createdAt: -1 } },
+    {
+      $lookup: {
+        from: 'users',
+        localField: 'userId',
+        foreignField: '_id',
+        as: 'user',
+        pipeline: [
+          {
+            $project: {
+              password: 0,
+              refreshToken: 0,
+            },
+          },
+        ],
+      },
+    },
+    {
+      $unwind: '$user',
+    },
+    {
+      $lookup: {
+        from: 'users',
+        localField: 'followerId',
+        foreignField: '_id',
+        as: 'follower',
+        pipeline: [
+          {
+            $project: {
+              password: 0,
+              refreshToken: 0,
+            },
+          },
+        ],
+      },
+    },
+    {
+      $unwind: { path: '$follower', preserveNullAndEmptyArrays: true },
+    },
+    {
+      $lookup: {
+        from: 'posts',
+        localField: 'postId',
+        foreignField: '_id',
+        as: 'post',
+        pipeline: [
+          {
+            $lookup: {
+              from: 'users',
+              localField: 'author',
+              foreignField: '_id',
+              as: 'user',
+            },
+          },
+          {
+            $unwind: { path: '$user', preserveNullAndEmptyArrays: true },
+          },
+        ],
+      },
+    },
+    {
+      $unwind: { path: '$post', preserveNullAndEmptyArrays: true },
+    },
+    {
+      $lookup: {
+        from: 'comments',
+        localField: 'commentId',
+        foreignField: '_id',
+        as: 'comment',
+        pipeline: [
+          {
+            $lookup: {
+              from: 'users',
+              localField: 'userId',
+              foreignField: '_id',
+              as: 'user',
+            },
+          },
+          {
+            $unwind: { path: '$user', preserveNullAndEmptyArrays: true },
+          },
+          {
+            $lookup: {
+              from: 'posts',
+              localField: 'postId',
+              foreignField: '_id',
+              as: 'post',
+            },
+          },
+          {
+            $unwind: { path: '$post', preserveNullAndEmptyArrays: true },
+          },
+        ],
+      },
+    },
+    {
+      $unwind: { path: '$comment', preserveNullAndEmptyArrays: true },
+    },
+    {
+      $lookup: {
+        from: 'likes',
+        localField: 'likeId',
+        foreignField: '_id',
+        as: 'like',
+        pipeline: [
+          {
+            $lookup: {
+              from: 'users',
+              localField: 'userId',
+              foreignField: '_id',
+              as: 'user',
+            },
+          },
+          {
+            $unwind: { path: '$user', preserveNullAndEmptyArrays: true },
+          },
+          {
+            $lookup: {
+              from: 'posts',
+              localField: 'postId',
+              foreignField: '_id',
+              as: 'post',
+            },
+          },
+          {
+            $unwind: { path: '$post', preserveNullAndEmptyArrays: true },
+          },
+        ],
+      },
+    },
+    {
+      $unwind: { path: '$like', preserveNullAndEmptyArrays: true },
+    },
+  ]);
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, 'User posts fetched successfully', notifications));
 };
 
 export const refreshAccessToken = async (req, res) => {
@@ -296,24 +472,37 @@ export const refreshAccessToken = async (req, res) => {
   res
     .status(200)
     .json(
-      new ApiResponse(200, 'Access token refreshed successfully', { accessToken, refreshToken })
+      new ApiResponse(200, 'Access token refreshed successfully', { accessToken, refreshToken }),
     );
 };
 
 export const updateUser = async (req, res) => {
   const { _id } = req.user;
-  const { bio, name, location, website } = req.body;
+  const { bio, name, location, website, academicRank } = req.body;
 
-  if (!bio || !name || !location || !website) {
+  if (!bio || !name || !location || !website || !academicRank) {
     throw ApiError.BAD_REQUEST('Missing required fields');
   }
 
-  console.log(req.body);
+  if (req.file) {
+    const secureUrl = await cloudinary(req.file?.path);
+
+    const user = await userModel.findByIdAndUpdate(
+      _id,
+      { bio, name, location, website, avatar: secureUrl, academicRank },
+      { new: true },
+    );
+
+    if (!user) {
+      throw ApiError.NOT_FOUND('User not found');
+    }
+    return res.status(200).json(new ApiResponse(200, 'User updated successfully', user));
+  }
 
   const user = await userModel.findByIdAndUpdate(
     _id,
-    { bio, name, location, website },
-    { new: true }
+    { bio, name, location, website, academicRank },
+    { new: true },
   );
 
   if (!user) {
