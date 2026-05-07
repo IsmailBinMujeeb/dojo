@@ -194,6 +194,7 @@ export const getChat = async (req, res) => {
           {
             $unwind: '$receiver',
           },
+          { $sort: { createdAt: 1 } },
         ],
       },
     },
