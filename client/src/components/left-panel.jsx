@@ -52,11 +52,11 @@ const NAVIGATION_ITEMS = [
         icon: MessageCircle,
         path: "/messages",
     },
-    {
-        label: "Dojo AI",
-        icon: Snowflake,
-        path: "/dojoai",
-    },
+    // {
+    //     label: "Dojo AI",
+    //     icon: Snowflake,
+    //     path: "/dojoai",
+    // },
     {
         label: "Bookmarks",
         icon: Bookmark,
