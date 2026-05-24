@@ -29,7 +29,7 @@ export const getLikes = async (req, res) => {
       limit,
       sort: { createdAt: -1 },
       populate: { path: 'user', select: 'username name avatar _id' },
-    }
+    },
   );
 
   return res.status(200).json(new ApiResponse(200, 'Likes retrieved', likes));

@@ -20,5 +20,8 @@
   "homepage": "https://github.com/IsmailBinMujeeb/dojo#readme",
   "dependencies": {
     "concurrently": "^9.2.1"
+  },
+  "devDependencies": {
+    "baseline-browser-mapping": "^2.10.27"
   }
 }

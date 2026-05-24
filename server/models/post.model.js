@@ -46,7 +46,7 @@ const postSchema = new mongoose.Schema(
       default: 0,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 postSchema.plugin(paginatePlugin);

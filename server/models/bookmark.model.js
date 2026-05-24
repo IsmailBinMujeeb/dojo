@@ -14,7 +14,7 @@ const bookmarkSchema = new mongoose.Schema(
       required: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 bookmarkSchema.plugin(paginatePlugin);

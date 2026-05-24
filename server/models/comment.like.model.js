@@ -14,7 +14,7 @@ const likeSchema = new mongoose.Schema(
       required: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 likeSchema.plugin(paginatePlugin);
