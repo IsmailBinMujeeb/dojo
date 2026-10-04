@@ -26,9 +26,9 @@ export const getBookmarks = async (req, res) => {
   const skip = (page - 1) * limit;
   const bookmarks = await bookmarkModel.aggregate([
     { $match: { userId: new mongoose.Types.ObjectId(userId) } },
-    { $skip: skip },
-    { $limit: limit },
     { $sort: { createdAt: -1 } },
+    { $limit: limit },
+    { $skip: skip },
     {
       $lookup: {
         from: 'users',
@@ -72,7 +72,113 @@ export const getBookmarks = async (req, res) => {
             },
           },
           {
+            $lookup: {
+              from: 'postdocs',
+              localField: '_id',
+              foreignField: 'postId',
+              as: 'images',
+              pipeline: [
+                {
+                  $match: {
+                    type: 'image',
+                  },
+                },
+              ],
+            },
+          },
+          {
+            $lookup: {
+              from: 'postdocs',
+              localField: '_id',
+              foreignField: 'postId',
+              as: 'documents',
+              pipeline: [
+                {
+                  $match: {
+                    type: 'other',
+                  },
+                },
+              ],
+            },
+          },
+          {
             $unwind: '$author',
+          },
+          {
+            $lookup: {
+              from: 'postpolls',
+              localField: '_id',
+              foreignField: 'postId',
+              as: 'poll',
+              pipeline: [
+                {
+                  $lookup: {
+                    from: 'postpolloptions',
+                    localField: '_id',
+                    foreignField: 'pollId',
+                    as: 'options',
+                    pipeline: [
+                      {
+                        $lookup: {
+                          from: 'postpolloptionvotes',
+                          let: {
+                            optionId: '$_id',
+                          },
+                          pipeline: [
+                            {
+                              $match: {
+                                $expr: {
+                                  $eq: ['$optionId', '$$optionId'],
+                                },
+                              },
+                            },
+                          ],
+                          as: 'votes',
+                        },
+                      },
+                      {
+                        $set: {
+                          votesCount: { $size: '$votes' },
+
+                          isVoted: {
+                            $in: [new mongoose.Types.ObjectId(userId), '$votes.userId'],
+                          },
+                        },
+                      },
+                      {
+                        $project: {
+                          _id: 1,
+                          text: 1,
+                          votesCount: 1,
+                          isVoted: 1,
+                        },
+                      },
+                    ],
+                  },
+                },
+                {
+                  $set: {
+                    totalVotes: {
+                      $sum: '$options.votesCount',
+                    },
+                  },
+                },
+                {
+                  $project: {
+                    _id: 0,
+                    options: 1,
+                    totalVotes: 1,
+                  },
+                },
+              ],
+            },
+          },
+          {
+            $set: {
+              poll: {
+                $arrayElemAt: ['$poll', 0],
+              },
+            },
           },
           {
             $lookup: {
