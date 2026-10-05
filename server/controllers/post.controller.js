@@ -128,6 +128,36 @@ export const getPost = async (req, res) => {
           },
           {
             $lookup: {
+              from: 'postdocs',
+              localField: '_id',
+              foreignField: 'postId',
+              as: 'images',
+              pipeline: [
+                {
+                  $match: {
+                    type: 'image',
+                  },
+                },
+              ],
+            },
+          },
+          {
+            $lookup: {
+              from: 'postdocs',
+              localField: '_id',
+              foreignField: 'postId',
+              as: 'documents',
+              pipeline: [
+                {
+                  $match: {
+                    type: 'other',
+                  },
+                },
+              ],
+            },
+          },
+          {
+            $lookup: {
               from: 'comments',
               localField: '_id',
               foreignField: 'parentComment',
@@ -197,6 +227,82 @@ export const getPost = async (req, res) => {
     },
     {
       $lookup: {
+        from: 'postpolls',
+        localField: '_id',
+        foreignField: 'postId',
+        as: 'poll',
+        pipeline: [
+          {
+            $lookup: {
+              from: 'postpolloptions',
+              localField: '_id',
+              foreignField: 'pollId',
+              as: 'options',
+              pipeline: [
+                {
+                  $lookup: {
+                    from: 'postpolloptionvotes',
+                    let: {
+                      optionId: '$_id',
+                    },
+                    pipeline: [
+                      {
+                        $match: {
+                          $expr: {
+                            $eq: ['$optionId', '$$optionId'],
+                          },
+                        },
+                      },
+                    ],
+                    as: 'votes',
+                  },
+                },
+                {
+                  $set: {
+                    votesCount: { $size: '$votes' },
+
+                    isVoted: {
+                      $in: [new mongoose.Types.ObjectId(userId), '$votes.userId'],
+                    },
+                  },
+                },
+                {
+                  $project: {
+                    _id: 1,
+                    text: 1,
+                    votesCount: 1,
+                    isVoted: 1,
+                  },
+                },
+              ],
+            },
+          },
+          {
+            $set: {
+              totalVotes: {
+                $sum: '$options.votesCount',
+              },
+            },
+          },
+          {
+            $project: {
+              _id: 0,
+              options: 1,
+              totalVotes: 1,
+            },
+          },
+        ],
+      },
+    },
+    {
+      $set: {
+        poll: {
+          $arrayElemAt: ['$poll', 0],
+        },
+      },
+    },
+    {
+      $lookup: {
         from: 'likes',
         localField: '_id',
         foreignField: 'postId',
@@ -218,6 +324,20 @@ export const getPost = async (req, res) => {
         bookmarksCount: { $size: '$bookmarks' },
       },
     },
+    {
+      $addFields: {
+        likesCount: { $size: '$likes' },
+        commentsCount: { $size: '$comments' },
+        bookmarksCount: { $size: '$bookmarks' },
+        isLiked: {
+          $in: [new mongoose.Types.ObjectId(userId), '$likes.userId'],
+        },
+        isBookmarked: {
+          $in: [new mongoose.Types.ObjectId(userId), '$bookmarks.userId'],
+        },
+      },
+    },
+    { $project: { likes: 0, bookmarks: 0 } },
   ]);
 
   if (!post) {

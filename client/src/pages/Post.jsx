@@ -1,24 +1,24 @@
-import { useContext, useEffect, useState, Fragment } from "react";
+import { useContext, useEffect, useRef, useState, Fragment } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "@/context/authContext";
 import { Spinner } from "@/components/ui/spinner";
 import { useParams, useSearchParams } from "react-router-dom";
-import {
-    Heart,
-    Bookmark,
-    ArrowLeft,
-    Share2,
-    SmilePlus,
-    Image,
-} from "lucide-react";
+import { Heart, Bookmark, ArrowLeft, SmilePlus, Image } from "lucide-react";
 import Comment from "@/components/Comment";
 import { ShareDialog } from "@/components/ShareDialog";
+import PostPoll from "@/components/PostPoll";
+import { PostImages, PostDocuments } from "@/components/PostAttachments";
 
 const PostPage = () => {
     const { user } = useContext(AuthContext);
     const { id } = useParams();
     const [post, setPost] = useState([]);
     const [replyText, setReplyText] = useState("");
+    const [isLiked, setIsLiked] = useState(false);
+    const [isBookmarked, setIsBookmarked] = useState(false);
+    const [likesCount, setLikesCount] = useState(0);
+    const [bookmarksCount, setBookmarksCount] = useState(0);
+    const pending = useRef({ like: false, bookmark: false });
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const isComment = searchParams.get("isComment") === "true";
@@ -39,9 +39,12 @@ const PostPage = () => {
                     return;
                 }
                 const json = await data.json();
-                console.log(json.data, "JSON");
 
                 setPost(json.data);
+                setIsLiked(!!json.data?.isLiked);
+                setIsBookmarked(!!json.data?.isBookmarked);
+                setLikesCount(json.data?.likesCount ?? 0);
+                setBookmarksCount(json.data?.bookmarksCount ?? 0);
             } catch (error) {
                 console.error(error);
             }
@@ -56,34 +59,52 @@ const PostPage = () => {
         );
     }
 
-    async function handlePostLike(e) {
-        e.stopPropagation();
-        const url = isComment
-            ? `${import.meta.env.VITE_API_ENDPOINT}/comment-like/${post?._id}`
-            : `${import.meta.env.VITE_API_ENDPOINT}/like/${post?._id}`;
+    // Optimistic toggle: flip immediately, roll back if the request fails.
+    async function toggle({ key, url, active, setActive, setCount }) {
+        if (!post?._id || pending.current[key]) return;
+        pending.current[key] = true;
+
+        setActive(!active);
+        setCount((c) => Math.max(0, c + (active ? -1 : 1)));
+
         try {
-            await fetch(url, {
+            const res = await fetch(url, {
                 credentials: "include",
                 method: "POST",
             });
+            if (!res.ok) throw new Error("Request failed");
         } catch (error) {
             console.log(error);
+            setActive(active);
+            setCount((c) => Math.max(0, c + (active ? 1 : -1)));
+        } finally {
+            pending.current[key] = false;
         }
     }
 
-    async function handlePostBookmark(e) {
+    function handlePostLike(e) {
         e.stopPropagation();
-        try {
-            await fetch(
-                `${import.meta.env.VITE_API_ENDPOINT}/bookmark/${post?._id}`,
-                {
-                    credentials: "include",
-                    method: "POST",
-                },
-            );
-        } catch (error) {
-            console.log(error);
-        }
+        toggle({
+            key: "like",
+            url: isComment
+                ? `${import.meta.env.VITE_API_ENDPOINT}/comment-like/${post._id}`
+                : `${import.meta.env.VITE_API_ENDPOINT}/like/${post._id}`,
+            active: isLiked,
+            setActive: setIsLiked,
+            setCount: setLikesCount,
+        });
+    }
+
+    function handlePostBookmark(e) {
+        e.stopPropagation();
+        if (isComment) return; // only posts can be bookmarked
+        toggle({
+            key: "bookmark",
+            url: `${import.meta.env.VITE_API_ENDPOINT}/bookmark/${post._id}`,
+            active: isBookmarked,
+            setActive: setIsBookmarked,
+            setCount: setBookmarksCount,
+        });
     }
 
     const handleCreateComment = async () => {
@@ -131,7 +152,6 @@ const PostPage = () => {
                         <div className="flex gap-3">
                             <img
                                 className="w-12 h-12 rounded-md object-cover"
-                                data-alt="Professional portrait of a woman in her 30s with an intelligent expression and natural lighting"
                                 src={post?.author?.avatar}
                             />
                             <div className="flex flex-col">
@@ -145,27 +165,40 @@ const PostPage = () => {
                         </div>
                         <ShareDialog link={`${window.location.href}`} />
                     </div>
-                    <div className="text-[21px] leading-[1.4] text-black mb-4 font-normal">
-                        {post?.content?.split("\n")?.map((line, index) => (
-                            <Fragment key={index}>
-                                {line}
-                                <br />
-                            </Fragment>
-                        ))}
-                        {/* <span className="text-primary font-semibold hover:underline">
-                            #NeuroEducation
-                        </span>{" "}
-                        <span className="text-primary font-semibold hover:underline">
-                            #AcademicDojo
-                        </span>*/}
-                    </div>
-                    {/* <div className="rounded-xl overflow-hidden mb-4 border border-outline-variant/10">
-                        <img
-                            className="w-full h-auto object-cover aspect-video"
-                            data-alt="Complex architectural visualization of a futuristic research laboratory with clean lines and glowing digital displays"
-                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuDV7fClYZ2COxrouSeQOoxugOt8xlMY_lwrwl2stWVBDPRRz-Kcu0pCrO5DLaJAx4Gb0t7LlOBTHiR90tY54uDlK1FOVw9XjweL6BGSg8mHSJdzrG57U_QYFOkVI_mgyNBjSv7f3FvJc76b34wyf6nUzxDYMl_zLXZT1TrK67YatQKD-CkL6DBgg4TUfr4Jb-6wArCaxLppdYc2NYxdTdktRwOAVw0ZX0_3JBB-CmRdfnD5Hj444qOI82__CFBApAEIldA7WEUJxmNX"
-                        />
-                    </div>*/}
+
+                    {post?.content && (
+                        <div className="text-[21px] leading-[1.4] text-black mb-4 font-normal break-words">
+                            {post.content.split("\n").map((line, index) => (
+                                <Fragment key={index}>
+                                    {line}
+                                    <br />
+                                </Fragment>
+                            ))}
+                        </div>
+                    )}
+
+                    {post?.images?.length > 0 && (
+                        <div className="mb-4">
+                            <PostImages images={post.images} />
+                        </div>
+                    )}
+
+                    {post?.poll && (
+                        <div className="mb-4">
+                            <PostPoll
+                                key={post._id}
+                                postId={post._id}
+                                poll={post.poll}
+                            />
+                        </div>
+                    )}
+
+                    {post?.documents?.length > 0 && (
+                        <div className="mb-4">
+                            <PostDocuments documents={post.documents} />
+                        </div>
+                    )}
+
                     <div className=" border-b border-secondary/10 flex items-center gap-6">
                         <div className="text-[15px]">
                             <span className="font-bold text-black">
@@ -175,33 +208,63 @@ const PostPage = () => {
                         </div>
                         <div className="text-[15px]">
                             <span className="font-bold text-black">
-                                {post?.likesCount}
+                                {likesCount}
                             </span>{" "}
                             <span className="text-secondary">Likes</span>
                         </div>
-                        <div className="text-[15px]">
-                            <span className="font-bold text-black">
-                                {post?.bookmarksCount}
-                            </span>{" "}
-                            <span className="text-secondary">Bookmarks</span>
-                        </div>
-                        <div className="flex gap-8 justify-end px-2 py-1 text-secondary ml-auto">
-                            <button className="p-2 hover:bg-secondary/10 rounded-md transition-colors flex items-center group">
-                                <span
-                                    className="material-symbols-outlined text-[20px] text-error"
-                                    data-icon="favorite"
-                                >
-                                    <Heart />
+                        {!isComment && (
+                            <div className="text-[15px]">
+                                <span className="font-bold text-black">
+                                    {bookmarksCount}
+                                </span>{" "}
+                                <span className="text-secondary">
+                                    Bookmarks
                                 </span>
-                            </button>
-                            <button className="p-2 hover:bg-secondary/10 rounded-md transition-colors flex items-center group">
+                            </div>
+                        )}
+                        <div className="flex gap-8 justify-end px-2 py-1 text-secondary ml-auto">
+                            <button
+                                className="p-2 hover:bg-secondary/10 rounded-md transition-colors flex items-center group cursor-pointer"
+                                onClick={handlePostLike}
+                                aria-label={isLiked ? "Unlike" : "Like"}
+                            >
                                 <span
                                     className="material-symbols-outlined text-[20px]"
-                                    data-icon="bookmark"
+                                    data-icon="favorite"
                                 >
-                                    <Bookmark />
+                                    <Heart
+                                        fill={isLiked ? "red" : "none"}
+                                        color={isLiked ? "red" : "currentColor"}
+                                    />
                                 </span>
                             </button>
+                            {!isComment && (
+                                <button
+                                    className="p-2 hover:bg-secondary/10 rounded-md transition-colors flex items-center group cursor-pointer"
+                                    onClick={handlePostBookmark}
+                                    aria-label={
+                                        isBookmarked
+                                            ? "Remove bookmark"
+                                            : "Bookmark"
+                                    }
+                                >
+                                    <span
+                                        className="material-symbols-outlined text-[20px]"
+                                        data-icon="bookmark"
+                                    >
+                                        <Bookmark
+                                            fill={
+                                                isBookmarked ? "blue" : "none"
+                                            }
+                                            color={
+                                                isBookmarked
+                                                    ? "blue"
+                                                    : "currentColor"
+                                            }
+                                        />
+                                    </span>
+                                </button>
+                            )}
                         </div>
                     </div>
                 </article>
@@ -209,7 +272,6 @@ const PostPage = () => {
                 <div className="px-4 py-3 flex gap-3 border-b border-secondary/10 items-start">
                     <img
                         className="w-10 h-10 rounded-md object-cover"
-                        data-alt="Close up portrait of a young male academic with glasses in a library"
                         src={user?.avatar}
                     />
                     <div className="flex-1">
@@ -250,150 +312,13 @@ const PostPage = () => {
                 </div>
                 {/* <!-- Threaded Comments -->*/}
                 <div className="flex flex-col">
-                    {/* <!-- Comment 1 -->*/}
                     {post?.comments?.map((comment) => (
                         <Fragment key={comment._id}>
                             <Comment comment={comment} postId={post._id} />
                         </Fragment>
                     ))}
-                    {/* <Post post={post} />*/}
                 </div>
             </div>
-            {/* <div className="p-4 flex flex-nowrap">
-                <Avatar className="size-12">
-                    <AvatarImage
-                        src={post?.author?.avatar}
-                        alt={post?.author?.avatar}
-                    />
-                    <AvatarFallback>{post?.author?.username}</AvatarFallback>
-                </Avatar>
-                <div className="ml-2 flex flex-col flex-nowrap">
-                    <h2 className="text-lg font-bold">{post?.author?.name}</h2>
-                    <p className="text-sm text-zinc-500">
-                        @{post?.author?.username}
-                    </p>
-                </div>
-                <Button
-                    variant="outline"
-                    className="ml-auto cursor-pointer text-lg filter invert brightness-0 hover:text-blue-500"
-                >
-                    🔒
-                </Button>
-            </div>
-            <div className="px-4 text-lg">{post?.content} </div>
-            <div className="p-4 text-zinc-500">
-                {post?.createdTime} · {post?.createdDate} ·{" "}
-                <span className="text-zinc-50 font-bold">{post?.views}</span>{" "}
-                Views
-            </div>
-            <div className="py-2 w-full flex flex-nowrap justify-around text-zinc-500 border-t border-t-zinc-500 border-b border-b-zinc-500">
-                <Button variant="ghost" className="cursor-pointer">
-                    <MessageCircle /> {post?.commentsCount}
-                </Button>
-                <Button
-                    variant="ghost"
-                    className="cursor-pointer hover:text-green-500"
-                >
-                    <Repeat2 /> 0
-                </Button>
-                <Button
-                    variant="ghost"
-                    className="cursor-pointer hover:text-pink-500"
-                    onClick={handlePostLike}
-                >
-                    <Heart /> {post?.likesCount}
-                </Button>
-                <Button
-                    variant="ghost"
-                    className="cursor-pointer hover:text-yellow-500"
-                >
-                    <Eye /> {post?.views}
-                </Button>
-                <Button
-                    variant="ghost"
-                    className="cursor-pointer hover:text-blue-500"
-                    onClick={handlePostBookmark}
-                >
-                    <Bookmark />
-                </Button>
-            </div>
-            <div className="flex flex-col flex-nowrap gap-2 p-4">
-                <div className="flex flex-nowrap gap-4">
-                    <Avatar className="size-12">
-                        <AvatarImage src={user?.avatar} alt={user?.avatar} />
-                        <AvatarFallback>{user?.username}</AvatarFallback>
-                    </Avatar>
-                    <Textarea
-                        placeholder="Post your reply..."
-                        className="resize-none"
-                        onChange={(e) => setReplyText(e.target.value)}
-                        value={replyText}
-                    />
-                </div>
-                <Button
-                    className="cursor-pointer font-bold ml-auto disabled:bg-zinc-300 disabled:text-zinc-800"
-                    disabled={replyText.trim()?.length === 0}
-                    onClick={handleCreateComment}
-                >
-                    Reply
-                </Button>
-            </div>
-            <div>
-                {post?.comments &&
-                    post?.comments.map((comment) => (
-                        <div
-                            key={comment._id}
-                            className="border-y border-y-zinc-500"
-                        >
-                            <div className="flex flex-col flex-nowrap gap-2 p-4">
-                                <div className="flex flex-nowrap">
-                                    <Avatar className="size-12">
-                                        <AvatarImage
-                                            src={comment.author?.avatar}
-                                            alt={comment.author?.username}
-                                        />
-                                        <AvatarFallback>
-                                            {comment.author?.username}
-                                        </AvatarFallback>
-                                    </Avatar>
-                                    <div className="px-2 flex flex-col flex-nowrap">
-                                        <span className="font-bold">
-                                            {comment.author?.name}
-                                        </span>{" "}
-                                        <span className="text-zinc-500 text-sm">
-                                            @{comment.author?.username}
-                                        </span>
-                                    </div>
-                                </div>
-                                <div className="px-4">{comment.content}</div>
-                                <div className="w-full flex flex-nowrap justify-around text-zinc-500">
-                                    <Button
-                                        variant="ghost"
-                                        className="cursor-pointer"
-                                    >
-                                        <MessageCircle />{" "}
-                                        {comment?.commentsCount}
-                                    </Button>
-                                    <Button
-                                        variant="ghost"
-                                        className="cursor-pointer hover:text-pink-500"
-                                        onClick={(e) =>
-                                            handleCommentLike(e, comment._id)
-                                        }
-                                    >
-                                        <Heart /> {comment?.likesCount}
-                                    </Button>
-                                    <Button
-                                        variant="ghost"
-                                        className="cursor-pointer hover:text-yellow-500"
-                                    >
-                                        <Eye /> 0
-                                    </Button>
-                                </div>
-                            </div>
-                        </div>
-                    ))}
-            </div>*/}
         </div>
     );
 };
