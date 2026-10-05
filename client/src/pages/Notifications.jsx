@@ -34,8 +34,8 @@ const NotificationItem = ({ data }) => {
     };
 
     return (
-        <div className="relative bg-white cursor-pointer rounded-md p-6 shadow-sm border-l-4 border-primary transition-all hover:translate-x-1 group">
-            <div className="rounded-md pr-2 transition-all hover:bg-white/50 group translate-x-4">
+        <div className="relative bg-card cursor-pointer rounded-md p-6 shadow-sm border-l-4 border-primary transition-all hover:translate-x-1 group">
+            <div className="rounded-md pr-2 transition-all hover:bg-card/50 group translate-x-4">
                 <div className="flex gap-6 items-start">
                     <div
                         className={`w-14 h-14 rounded-md flex items-center justify-center ${types[data.notificationType].color}`}

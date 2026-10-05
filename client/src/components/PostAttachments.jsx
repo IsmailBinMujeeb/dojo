@@ -52,7 +52,7 @@ export const PostImages = ({ images }) => {
                             }`}
                         />
                         {extra > 0 && i === MAX_VISIBLE_IMAGES - 1 && (
-                            <span className="absolute inset-0 flex items-center justify-center bg-black/50 text-2xl font-bold text-white">
+                            <span className="absolute inset-0 flex items-center justify-center bg-card/50 text-2xl font-bold text-card-foreground">
                                 +{extra}
                             </span>
                         )}
@@ -64,7 +64,7 @@ export const PostImages = ({ images }) => {
                 open={active !== null}
                 onOpenChange={(open) => !open && setActive(null)}
             >
-                <DialogContent className="w-[95vw] max-w-[95vw] sm:max-w-6xl border-0 bg-black/90 p-2">
+                <DialogContent className="w-[95vw] max-w-[95vw] sm:max-w-6xl border-0 bg-card/90 p-2">
                     <DialogTitle className="sr-only">Image preview</DialogTitle>
                     {active !== null && (
                         <div className="relative flex items-center justify-center">
@@ -78,7 +78,7 @@ export const PostImages = ({ images }) => {
                                     <button
                                         type="button"
                                         onClick={(e) => step(e, -1)}
-                                        className="absolute left-2 rounded-full bg-black/60 p-2 text-white hover:bg-black"
+                                        className="absolute left-2 rounded-full bg-card/60 p-2 text-foreground hover:bg-card"
                                         aria-label="Previous image"
                                     >
                                         <ChevronLeft size={20} />
@@ -86,7 +86,7 @@ export const PostImages = ({ images }) => {
                                     <button
                                         type="button"
                                         onClick={(e) => step(e, 1)}
-                                        className="absolute right-2 rounded-full bg-black/60 p-2 text-white hover:bg-black"
+                                        className="absolute right-2 rounded-full bg-card/60 p-2 text-foreground hover:bg-card"
                                         aria-label="Next image"
                                     >
                                         <ChevronRight size={20} />
@@ -113,18 +113,24 @@ export const PostDocuments = ({ documents }) => {
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={(e) => e.stopPropagation()}
-                    className="flex items-center gap-3 rounded-lg border border-secondary/20 px-3 py-2 transition-colors hover:bg-secondary/10"
+                    className="flex items-center gap-3 rounded-lg border border-card-foreground/20 px-3 py-2 transition-colors hover:bg-card-foreground/10"
                 >
-                    <FileText size={20} className="shrink-0 text-secondary" />
+                    <FileText
+                        size={20}
+                        className="shrink-0 text-card-foreground"
+                    />
                     <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-semibold text-secondary">
+                        <p className="truncate text-sm font-semibold text-card-foreground">
                             {doc.name}
                         </p>
-                        <p className="text-xs text-secondary/70">
+                        <p className="text-xs text-card-foreground/70">
                             {getExtension(doc.name)} · {formatSize(doc.size)}
                         </p>
                     </div>
-                    <Download size={16} className="shrink-0 text-secondary" />
+                    <Download
+                        size={16}
+                        className="shrink-0 text-card-foreground"
+                    />
                 </a>
             ))}
         </div>

@@ -51,7 +51,7 @@ const Post = ({ post }) => {
     };
 
     return (
-        <article className="post-card bg-white p-6 pb-2 pr-2 rounded-xl transition-all mb-2 shadow-xs">
+        <article className="post-card bg-card p-6 pb-2 pr-2 rounded-xl transition-all mb-2 shadow-xs">
             <div className="flex gap-4">
                 <div className="flex flex-col items-center">
                     <img
@@ -64,20 +64,20 @@ const Post = ({ post }) => {
                 <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between mb-1">
                         <div className="flex items-center gap-2">
-                            <span className="font-bold text-secondary">
+                            <span className="font-bold text-card-foreground">
                                 {post?.author?.name}
                             </span>
-                            <span className="text-[10px] bg-primary text-secondary px-2 py-0.5 rounded uppercase font-bold tracking-widest">
+                            <span className="text-[10px] bg-primary text-primary-foreground px-2 py-0.5 rounded uppercase font-bold tracking-widest">
                                 @{post?.author?.username}
                             </span>
                         </div>
-                        <span className="text-xs text-secondary font-label">
+                        <span className="text-xs text-card-foreground font-label">
                             {dayjs(post?.createdAt).fromNow()}
                         </span>
                     </div>
 
                     {post?.content && (
-                        <p className="text-body-lg text-secondary leading-relaxed mb-4 break-words">
+                        <p className="text-body-lg text-card-foreground leading-relaxed mb-4 break-words">
                             {post.content.split("\n").map((para, index) => (
                                 <span key={index}>
                                     {para}
@@ -130,8 +130,11 @@ const Post = ({ post }) => {
                                     data-icon="favorite"
                                 >
                                     <Heart
-                                        fill={isLiked ? "red" : "white"}
-                                        color={isLiked ? "red" : "black"}
+                                        className={
+                                            isLiked
+                                                ? "fill-red-500 stroke-red-500"
+                                                : "fill-transparent stroke-black dark:stroke-white"
+                                        }
                                     />
                                 </span>
                                 <span className="text-xs font-bold">
@@ -151,8 +154,11 @@ const Post = ({ post }) => {
                                 data-icon="bookmark"
                             >
                                 <Bookmark
-                                    fill={isBookmarked ? "blue" : "white"}
-                                    color={isBookmarked ? "blue" : "black"}
+                                    className={
+                                        isBookmarked
+                                            ? "fill-blue-500 stroke-blue-500"
+                                            : "fill-transparent stroke-black dark:stroke-white"
+                                    }
                                 />
                             </span>
                         </button>

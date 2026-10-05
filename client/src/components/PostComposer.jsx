@@ -146,7 +146,7 @@ const PostComposer = ({ user }) => {
 
     return (
         <>
-            <section className="mb-4 bg-white p-6 pb-2 rounded-xl border-b-4 shadow-sm border-primary">
+            <section className="mb-4 bg-card p-6 pb-2 rounded-xl border-b-4 shadow-sm border-primary">
                 <div className="flex gap-4">
                     <img
                         alt="User"
@@ -179,7 +179,7 @@ const PostComposer = ({ user }) => {
                                         <button
                                             type="button"
                                             onClick={() => removeImage(i)}
-                                            className="absolute top-1 right-1 rounded-full bg-black/60 p-1 text-white hover:bg-black"
+                                            className="absolute top-1 right-1 rounded-full bg-card/60 p-1 text-card-foreground hover:bg-card"
                                             aria-label="Remove image"
                                         >
                                             <X size={14} />
@@ -200,12 +200,12 @@ const PostComposer = ({ user }) => {
                                         <div className="flex min-w-0 items-center gap-2">
                                             <FileText
                                                 size={16}
-                                                className="shrink-0 text-secondary"
+                                                className="shrink-0 text-card-foreground"
                                             />
                                             <span className="truncate">
                                                 {doc.name}
                                             </span>
-                                            <span className="shrink-0 text-xs text-zinc-500">
+                                            <span className="shrink-0 text-xs text-card-foreground/50">
                                                 {Math.max(
                                                     1,
                                                     Math.round(doc.size / 1024),
@@ -299,7 +299,7 @@ const PostComposer = ({ user }) => {
                             <p className="mt-2 text-sm text-red-500">{error}</p>
                         )}
 
-                        <div className="flex justify-between items-center mt-4 pt-4 border-t border-surface-container">
+                        <div className="flex justify-between items-center mt-4 pt-4 border-t border-card-foreground">
                             <div className="flex gap-2 text-primary">
                                 <button
                                     type="button"
@@ -307,7 +307,7 @@ const PostComposer = ({ user }) => {
                                     onClick={() =>
                                         imageInputRef.current?.click()
                                     }
-                                    className="p-2 hover:bg-secondary/10 rounded-md cursor-pointer text-secondary"
+                                    className="p-2 hover:bg-card/10 rounded-md cursor-pointer text-card-foreground"
                                 >
                                     <ImageIcon />
                                 </button>
@@ -315,8 +315,8 @@ const PostComposer = ({ user }) => {
                                     type="button"
                                     title={poll ? "Remove poll" : "Create poll"}
                                     onClick={togglePoll}
-                                    className={`p-2 hover:bg-secondary/10 rounded-md cursor-pointer text-secondary ${
-                                        poll ? "bg-secondary/10" : ""
+                                    className={`p-2 hover:bg-card/10 rounded-md cursor-pointer text-card-foreground ${
+                                        poll ? "bg-card/10" : ""
                                     }`}
                                 >
                                     <ChartNoAxesColumn />
@@ -327,7 +327,7 @@ const PostComposer = ({ user }) => {
                                     onClick={() =>
                                         documentInputRef.current?.click()
                                     }
-                                    className="p-2 hover:bg-secondary/10 rounded-md cursor-pointer text-secondary"
+                                    className="p-2 hover:bg-card/10 rounded-md cursor-pointer text-card-foreground"
                                 >
                                     <Paperclip />
                                 </button>

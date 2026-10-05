@@ -12,7 +12,7 @@ const Chat = ({ user, recentMessage, chatId, onChatThreadClick }) => {
     return (
         <>
             <div
-                className={`p-4 rounded-md cursor-pointer border-l-4 border-primary ${!isActiveChat ? "border-none hover:bg-white/60 bg-white/90" : "bg-white shadow-sm"}`}
+                className={`p-4 rounded-md cursor-pointer border-l-4 border-primary ${!isActiveChat ? "border-none hover:bg-card/60 bg-card/90" : "bg-card shadow-sm"}`}
                 onClick={onChatThreadClick}
             >
                 <div className="flex items-start gap-3">
@@ -24,17 +24,17 @@ const Chat = ({ user, recentMessage, chatId, onChatThreadClick }) => {
                     />
                     <div className="flex-1 min-w-0">
                         <div className="flex justify-between items-baseline">
-                            <h3 className="font-bold text-secondary truncate">
+                            <h3 className="font-bold text-card-foreground truncate">
                                 {user?.name}
                             </h3>
-                            <span className="text-[10px] font-bold text-secondary bg-secondary/20 py-1 px-2 rounded-md">
+                            <span className="text-[10px] font-bold text-card-foreground bg-card-foreground/20 py-1 px-2 rounded-md">
                                 {dayjs(recentMessage?.createdAt).fromNow()}
                             </span>
                         </div>
                         <p className="text-xs font-bold text-tertiary truncate mt-0.5">
                             {user?.academicRank}
                         </p>
-                        <p className="text-sm text-secondary/50 truncate mt-1">
+                        <p className="text-sm text-card-foreground/50 truncate mt-1">
                             {recentMessage?.message}
                         </p>
                     </div>
@@ -94,7 +94,7 @@ const Messages = () => {
                         )}
                     </div>
                 ))}
-            <div className="p-4 text-center text-zinc-500 font-semibold">
+            <div className="p-4 text-center text-card-foreground/50 font-semibold">
                 This is all we have.
             </div>
         </div>

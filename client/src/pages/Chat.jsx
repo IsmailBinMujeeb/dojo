@@ -31,7 +31,7 @@ const ChatThread = ({
     return (
         <>
             <div
-                className={`p-4 rounded-md cursor-pointer border-l-4 border-primary ${!isActiveChat ? "border-none hover:bg-white/60 bg-white/90" : "bg-white shadow-sm"}`}
+                className={`p-4 rounded-md cursor-pointer border-l-4 border-primary ${!isActiveChat ? "border-none hover:bg-card/60 bg-card/90" : "bg-card shadow-sm"}`}
                 onClick={onChatThreadClick}
             >
                 <div className="flex items-start gap-3">
@@ -43,7 +43,7 @@ const ChatThread = ({
                     />
                     <div className="flex-1 min-w-0">
                         <div className="flex justify-between items-baseline">
-                            <h3 className="font-bold text-secondary truncate">
+                            <h3 className="font-bold text-card-foreground truncate">
                                 {user?.name}
                             </h3>
                             <span className="text-[10px] font-bold text-primary">
@@ -53,7 +53,7 @@ const ChatThread = ({
                         <p className="text-xs font-bold text-tertiary truncate mt-0.5">
                             {user?.academicRank}
                         </p>
-                        <p className="text-sm text-secondary/50 truncate mt-1">
+                        <p className="text-sm text-card-foreground/50 truncate mt-1">
                             {recentMessage?.message}
                         </p>
                     </div>
@@ -175,10 +175,10 @@ const Chat = () => {
             <div className="flex-1 flex overflow-hidden">
                 <section className="w-80 lg:w-96 shrink-0 bg-accent flex flex-col border-r-0">
                     <div className="p-6">
-                        <h2 className="text-2xl font-black tracking-tight text-secondary mb-2">
+                        <h2 className="text-2xl font-black tracking-tight text-card-foreground mb-2">
                             Discussions
                         </h2>
-                        <p className="text-xs font-bold uppercase tracking-widest text-secondary">
+                        <p className="text-xs font-bold uppercase tracking-widest text-card-foreground">
                             8 Active Threads
                         </p>
                     </div>
@@ -215,7 +215,7 @@ const Chat = () => {
                 {/* <!-- Right Column: Active Chat (60% width) -->*/}
                 <section className="flex-1 flex flex-col bg-surface-container-lowest">
                     {/* <!-- Message Feed -->*/}
-                    <div className="flex-1 bg-white border-r-4 border-accent rounded-md overflow-y-auto p-8 space-y-8 flex flex-col">
+                    <div className="flex-1 bg-card border-r-4 border-accent rounded-md overflow-y-auto p-8 space-y-8 flex flex-col">
                         {/* <!-- Recipient Message -->*/}
                         {messages?.map((m) => {
                             return (
@@ -229,10 +229,10 @@ const Chat = () => {
                                                 src={user?.avatar}
                                             />
                                             <div className="space-y-1 flex flex-col items-end">
-                                                <div className="bg-primary p-5 rounded-2xl rounded-br-none text-secondary leading-relaxed text-sm shadow-sm">
+                                                <div className="bg-primary p-5 rounded-2xl rounded-br-none text-primary-foreground leading-relaxed text-sm shadow-sm">
                                                     {m?.message}
                                                 </div>
-                                                <span className="text-[10px] font-bold text-secondary uppercase pr-1">
+                                                <span className="text-[10px] font-bold text-card-foreground uppercase pr-1">
                                                     {dayjs(
                                                         m?.createdAt,
                                                     ).fromNow()}
@@ -256,7 +256,7 @@ const Chat = () => {
                                                 <div className="bg-accent p-5 rounded-2xl rounded-bl-none text-on-surface leading-relaxed text-sm shadow-sm">
                                                     {m?.message}
                                                 </div>
-                                                <span className="text-[10px] font-bold text-secondary uppercase pl-1">
+                                                <span className="text-[10px] font-bold text-card-foreground uppercase pl-1">
                                                     {dayjs(
                                                         m?.createdAt,
                                                     ).fromNow()}
@@ -269,16 +269,16 @@ const Chat = () => {
                         })}
                     </div>
                     {/* <!-- Message Input -->*/}
-                    <div className="px-8 py-6 bg-white border-t-4 border-r-4 border-accent rounded-md">
+                    <div className="px-8 py-6 bg-card border-t-4 border-r-4 border-accent rounded-md">
                         <div className="flex items-center gap-4">
-                            <button className="p-2 text-secondary hover:text-primary transition-colors">
+                            <button className="p-2 text-card-foreground hover:text-primary transition-colors">
                                 <span className="material-symbols-outlined">
                                     <CirclePlus />
                                 </span>
                             </button>
                             <div className="flex-1 relative">
                                 <Input
-                                    className="w-full py-4 pr-6 text-sm placeholder:text-secondary focus:ring-2 focus:ring-primary transition-all"
+                                    className="w-full py-4 pr-6 text-sm placeholder:text-card-foreground focus:ring-2 focus:ring-primary transition-all"
                                     placeholder="WRITE YOUR SCHOLARLY RESPONSE..."
                                     type="text"
                                     value={messageText}
@@ -287,12 +287,12 @@ const Chat = () => {
                                     }
                                 />
                                 <div className="absolute right-4 top-1/2 -translate-y-1/2 flex gap-3">
-                                    <button className="text-secondary hover:text-primary">
+                                    <button className="text-card-foreground hover:text-primary">
                                         <span className="material-symbols-outlined">
                                             <SmilePlus />
                                         </span>
                                     </button>
-                                    <button className="text-secondary hover:text-primary">
+                                    <button className="text-card-foreground hover:text-primary">
                                         <span className="material-symbols-outlined">
                                             <Paperclip />
                                         </span>

@@ -32,7 +32,7 @@ export const ProfileDetails = ({
         <div className="max-w-6xl mx-auto p-6">
             <div className="grid grid-cols-1 md:grid-cols-12 gap-6 mb-12">
                 {/* <!-- Identity Card -->*/}
-                <div className="md:col-span-8 bg-white p-8 rounded-xl shadow-sm border-l-8 border-primary relative overflow-hidden">
+                <div className="md:col-span-8 bg-card p-8 rounded-xl shadow-sm border-l-8 border-primary relative overflow-hidden">
                     <div className="flex flex-col md:flex-row gap-8 items-start relative z-10">
                         <div className="w-32 h-32 md:w-48 md:h-48 rounded-2xl overflow-hidden shadow-2xl rotate-3 shrink-0">
                             <img
@@ -51,7 +51,7 @@ export const ProfileDetails = ({
                             <div className="flex flex-wrap gap-3 mt-12">
                                 {isProfileOwner ? null : (
                                     <button
-                                        className="bg-primary text-secondary cursor-pointer px-8 py-3 rounded-lg font-black text-sm uppercase tracking-tighter shadow-md hover:translate-y-0.5 transition-transform disabled:opacity-50"
+                                        className="bg-primary text-primary-foreground cursor-pointer px-8 py-3 rounded-lg font-black text-sm uppercase tracking-tighter shadow-md hover:translate-y-0.5 transition-transform disabled:opacity-50"
                                         onClick={handleFollow}
                                         disabled={isFollowingLoading}
                                     >
@@ -64,14 +64,14 @@ export const ProfileDetails = ({
                                 )}
                                 {isProfileOwner ? (
                                     <button
-                                        className="bg-secondary text-accent cursor-pointer px-6 py-3 rounded-lg font-bold text-sm uppercase tracking-tighter hover:bg-surface-container-highest transition-colors"
+                                        className="bg-card-foreground text-card cursor-pointer px-6 py-3 rounded-lg font-bold text-sm uppercase tracking-tighter hover:bg-surface-container-highest transition-colors"
                                         onClick={() => navigate("/settings")}
                                     >
                                         Edit Profile
                                     </button>
                                 ) : (
                                     <button
-                                        className="bg-secondary text-accent cursor-pointer px-6 py-3 rounded-lg font-bold text-sm uppercase tracking-tighter hover:bg-surface-container-highest transition-colors"
+                                        className="bg-card-foreground text-card cursor-pointer px-6 py-3 rounded-lg font-bold text-sm uppercase tracking-tighter hover:bg-surface-container-highest transition-colors"
                                         onClick={() =>
                                             navigate(
                                                 `/new-message/${user?.username}`,
@@ -87,7 +87,7 @@ export const ProfileDetails = ({
                 </div>
                 {/* <!-- Stats Card -->*/}
                 <div className="md:col-span-4 grid grid-cols-2 gap-4">
-                    <div className="bg-white p-6 rounded-xl flex flex-col justify-between">
+                    <div className="bg-card p-6 rounded-xl flex flex-col justify-between">
                         <span
                             className="material-symbols-outlined text-primary-dim text-3xl"
                             data-icon="book"
@@ -103,7 +103,7 @@ export const ProfileDetails = ({
                             </div>
                         </div>
                     </div>
-                    <div className="bg-white p-6 rounded-xl flex flex-col justify-between">
+                    <div className="bg-card p-6 rounded-xl flex flex-col justify-between">
                         <span
                             className="material-symbols-outlined text-primary-dim text-3xl"
                             data-icon="history_edu"
@@ -119,7 +119,7 @@ export const ProfileDetails = ({
                             </div>
                         </div>
                     </div>
-                    <div className="bg-white p-6 rounded-xl flex flex-col justify-between">
+                    <div className="bg-card p-6 rounded-xl flex flex-col justify-between">
                         <span
                             className="material-symbols-outlined text-primary-dim text-3xl"
                             data-icon="group"
@@ -135,7 +135,7 @@ export const ProfileDetails = ({
                             </div>
                         </div>
                     </div>
-                    <div className="bg-white p-6 rounded-xl flex flex-col justify-between">
+                    <div className="bg-card p-6 rounded-xl flex flex-col justify-between">
                         <span
                             className="material-symbols-outlined text-primary-dim text-3xl"
                             data-icon="star"
@@ -177,7 +177,7 @@ export const ProfileDetails = ({
                                 </p>
                             ))}
                     </div>
-                    <div className="bg-white p-6 rounded-xl space-y-4">
+                    <div className="bg-card p-6 rounded-xl space-y-4">
                         <h4 className="text-xs font-black uppercase tracking-widest border-b border-outline-variant pb-2">
                             Interests
                         </h4>

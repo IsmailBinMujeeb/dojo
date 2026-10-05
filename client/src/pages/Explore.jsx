@@ -37,14 +37,14 @@ const Explore = () => {
 
     return (
         <div>
-            <header className="z-40 bg-white flex justify-between items-center px-8 h-16">
+            <header className="z-40 bg-card flex justify-between items-center px-8 h-16">
                 <div className="flex items-center flex-1">
                     <div className="relative w-full group gap-4">
-                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400">
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-card-foreground">
                             <Search />
                         </span>
                         <input
-                            className="w-full bg-surface-container-low border-none rounded-full py-2 pl-10 pr-4 text-sm focus:ring-2 focus:ring-yellow-400 transition-all outline-none"
+                            className="w-full bg-card border-none rounded-full py-2 pl-10 pr-4 text-sm focus:ring-2 focus:ring-primary transition-all outline-none"
                             placeholder="Search the research labs..."
                             type="text"
                             value={searchQueryState}

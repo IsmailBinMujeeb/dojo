@@ -32,7 +32,7 @@ const Comment = ({ comment, postId }) => {
     };
 
     return (
-        <article className="post-card bg-white hover:bg-accent cursor-pointer p-6 transition-all mb-2 shadow-xs">
+        <article className="post-card bg-card hover:bg-accent cursor-pointer p-6 transition-all mb-2 shadow-xs">
             <div className="flex gap-4">
                 <div className="flex flex-col items-center">
                     <img
@@ -46,18 +46,18 @@ const Comment = ({ comment, postId }) => {
                 <div className="flex-1">
                     <div className="flex items-center justify-between mb-1">
                         <div className="flex items-center gap-2">
-                            <span className="font-bold text-secondary">
+                            <span className="font-bold text-card-foreground">
                                 {comment?.author?.name}
                             </span>
-                            <span className="text-[10px] bg-primary text-secondary px-2 py-0.5 rounded uppercase font-bold tracking-widest">
+                            <span className="text-[10px] bg-primary text-card-foreground px-2 py-0.5 rounded uppercase font-bold tracking-widest">
                                 @{comment?.author?.username}
                             </span>
                         </div>
-                        <span className="text-xs text-secondary font-label">
+                        <span className="text-xs text-card-foreground font-label">
                             {dayjs(comment?.createdAt).fromNow()}
                         </span>
                     </div>
-                    <p className="text-body-lg text-secondary leading-relaxed mb-4">
+                    <p className="text-body-lg text-card-foreground leading-relaxed mb-4">
                         {comment?.content.split("\n").map((para, index) => (
                             <span key={index}>
                                 {para}

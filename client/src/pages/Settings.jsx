@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { AuthContext } from "@/context/authContext";
 import { useEffect } from "react";
 import { useRef } from "react";
+import { THEMES, applyTheme, getStoredTheme } from "@/lib/theme";
 
 const Settings = () => {
     const { user } = useContext(AuthContext);
@@ -27,6 +28,12 @@ const Settings = () => {
     const [avatar, setAvatar] = useState(null);
     const [avatarPreview, setAvatarPreview] = useState(null);
     const avatarRef = useRef(null);
+    const [theme, setTheme] = useState(getStoredTheme());
+
+    const handleThemeChange = (id) => {
+        setTheme(id);
+        applyTheme(id);
+    };
 
     useEffect(() => {
         if (!user || fullName === "" || bio === "" || academic === "")
@@ -119,7 +126,7 @@ const Settings = () => {
 
     return (
         <div className="flex w-full max-w-2xl flex-col gap-6 mx-auto my-4">
-            <section className="bg-white p-8 rounded-md" id="account">
+            <section className="bg-card p-8 rounded-md" id="account">
                 <div className="flex items-center gap-4 mb-8">
                     <div className="w-16 h-16 rounded-md overflow-hidden border-4 border-primary">
                         <img
@@ -140,7 +147,7 @@ const Settings = () => {
                             onChange={handleAvatarChange}
                         />
                         <button
-                            className="text-xs font-bold text-yellow-600 uppercase tracking-widest mt-1"
+                            className="text-xs font-bold text-primary/60 uppercase tracking-widest mt-1"
                             onClick={() => avatarRef.current?.click()}
                         >
                             Change Avatar
@@ -149,7 +156,7 @@ const Settings = () => {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-1">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-secondary ml-1">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-card-foreground/50 ml-1">
                             Full Name
                         </label>
                         <Input
@@ -160,7 +167,7 @@ const Settings = () => {
                         />
                     </div>
                     <div className="space-y-1">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-secondary ml-1">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-card-foreground/50 ml-1">
                             Academic Rank
                         </label>
                         <Input
@@ -171,7 +178,7 @@ const Settings = () => {
                         />
                     </div>
                     <div className="md:col-span-2 space-y-1">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-secondary ml-1">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-card-foreground/50 ml-1">
                             Website Link
                         </label>
                         <Input
@@ -186,7 +193,7 @@ const Settings = () => {
                         />
                     </div>
                     <div className="md:col-span-2 space-y-1">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-secondary ml-1">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-card-foreground/50 ml-1">
                             Location
                         </label>
                         <Input
@@ -199,7 +206,7 @@ const Settings = () => {
                         />
                     </div>
                     <div className="md:col-span-2 space-y-1">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-secondary ml-1">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-card-foreground/50 ml-1">
                             Bio
                         </label>
                         <textarea
@@ -223,7 +230,47 @@ const Settings = () => {
                 </Button>
             </section>
 
-            <Item variant="outline" className="bg-white border-none">
+            <section className="bg-card p-8 rounded-md" id="appearance">
+                <h3 className="text-xl font-bold mb-1">Appearance</h3>
+                <p className="text-sm text-muted-foreground mb-6">
+                    Choose how the app looks for you.
+                </p>
+
+                <div className="grid grid-cols-2 gap-4">
+                    {THEMES.map((t) => (
+                        <button
+                            key={t.id}
+                            type="button"
+                            onClick={() => handleThemeChange(t.id)}
+                            aria-pressed={theme === t.id}
+                            className={`cursor-pointer rounded-md border-2 p-3 text-left transition-colors ${
+                                theme === t.id
+                                    ? "border-primary"
+                                    : "border-border hover:border-primary/50"
+                            }`}
+                        >
+                            <div
+                                className="flex h-16 overflow-hidden rounded border"
+                                style={{ backgroundColor: t.colors[0] }}
+                            >
+                                <div
+                                    className="m-2 flex-1 rounded"
+                                    style={{ backgroundColor: t.colors[1] }}
+                                />
+                                <div
+                                    className="m-2 w-6 rounded"
+                                    style={{ backgroundColor: t.colors[2] }}
+                                />
+                            </div>
+                            <span className="mt-2 block text-sm font-semibold">
+                                {t.label}
+                            </span>
+                        </button>
+                    ))}
+                </div>
+            </section>
+
+            <Item variant="outline" className="bg-card border-none">
                 <ItemContent>
                     <ItemTitle>Delete Account</ItemTitle>
                     <ItemDescription>

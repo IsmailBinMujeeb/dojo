@@ -56,8 +56,8 @@ const PostPoll = ({ postId, poll: initialPoll }) => {
                         className={`relative w-full overflow-hidden rounded-lg border px-3 py-2 text-left text-sm transition-colors ${
                             hasVoted
                                 ? "cursor-default"
-                                : "cursor-pointer hover:bg-secondary/10 disabled:opacity-60"
-                        } ${option.isVoted ? "border-secondary" : "border-secondary/20"}`}
+                                : "cursor-pointer hover:bg-card/10 disabled:opacity-60"
+                        } ${option.isVoted ? "border-primary" : "border-card-foreground/20"}`}
                     >
                         {hasVoted && (
                             <span
@@ -66,12 +66,12 @@ const PostPoll = ({ postId, poll: initialPoll }) => {
                             />
                         )}
                         <span className="relative flex items-center justify-between gap-2">
-                            <span className="flex items-center gap-1 font-medium text-secondary">
+                            <span className="flex items-center gap-1 font-medium text-card-foreground">
                                 {option.isVoted && <Check size={14} />}
                                 {option.text}
                             </span>
                             {hasVoted && (
-                                <span className="text-xs font-bold text-secondary">
+                                <span className="text-xs font-bold text-card-foreground">
                                     {percent}%
                                 </span>
                             )}
@@ -80,7 +80,7 @@ const PostPoll = ({ postId, poll: initialPoll }) => {
                 );
             })}
 
-            <div className="flex items-center justify-between text-xs text-secondary/70">
+            <div className="flex items-center justify-between text-xs text-card-foreground/70">
                 <span>
                     {poll.totalVotes} {poll.totalVotes === 1 ? "vote" : "votes"}
                 </span>

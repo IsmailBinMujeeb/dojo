@@ -46,7 +46,7 @@ const RightPanel = () => {
 
     return (
         <div className="flex flex-col gap-4 w-full">
-            <div className="bg-input flex flex-row items-center rounded-md px-3 py-2">
+            <div className="bg-input flex flex-row items-center gap-2 rounded-md px-3 py-2">
                 <span className="text-on-surface-variant" data-icon="search">
                     <Search />
                 </span>
@@ -93,7 +93,7 @@ const RightPanel = () => {
                                     </div>
                                 </div>
                                 <Button
-                                    className="cursor-pointer ml-auto py-1 text-accent"
+                                    className="cursor-pointer ml-auto py-1 bg-primary text-primary-foreground"
                                     onClick={() =>
                                         navigate(`/${user?.username}`)
                                     }
